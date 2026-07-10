@@ -1,0 +1,209 @@
+{
+  "version": 1,
+  "skills": {
+    "Create GitHub README": {
+      "source": "alfredang/skills",
+      "sourceType": "github",
+      "skillPath": "readme/SKILL.md",
+      "computedHash": "262ae26c90d3a1d5c6c213a181446b206854ee646672b29e0c91ef1951ae9245"
+    },
+    "accelint-readme-writer": {
+      "source": "gohypergiant/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/accelint-readme-writer/SKILL.md",
+      "computedHash": "8c6c2801f0448d630e51c2425021cd65fd1bfb40cf03ad2c313778f00f0e8b2f"
+    },
+    "configure-readme": {
+      "source": "laurigates/claude-plugins",
+      "sourceType": "github",
+      "skillPath": "configure-plugin/skills/configure-readme/SKILL.md",
+      "computedHash": "22599dbc1d1f738707c587ca979480d9c60fd40957decee325ed7b29746d689c"
+    },
+    "crafting-effective-readmes": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/crafting-effective-readmes/SKILL.md",
+      "computedHash": "c931a8c22160e8925400778fcb2266b5d1df762f3052edba65f72479f79f2d6c"
+    },
+    "crafting-readme-files": {
+      "source": "dicklesworthstone/meta_skill",
+      "sourceType": "github",
+      "skillPath": "skills/crafting-readme-files/SKILL.md",
+      "computedHash": "85fcfb2c99dc1da8042b39432cac2b760517f52dad8def76a37ebef395508941"
+    },
+    "create-readme": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/create-readme/SKILL.md",
+      "computedHash": "d0ece1b2164ce1376e4ab6e98d6ac079df3a2a94f5f02224362b6a1ce2516ae9"
+    },
+    "diataxis-gen-readme": {
+      "source": "trogonstack/agentskills",
+      "sourceType": "github",
+      "skillPath": "plugins/trogonstack-diataxis/skills/diataxis-gen-readme/SKILL.md",
+      "computedHash": "32a401c93db491073dcbb92e24827c0be789a058e67368954d65567eaf92109c"
+    },
+    "generate-readme": {
+      "source": "cowork-os/cowork-os",
+      "sourceType": "github",
+      "skillPath": "resources/skills/generate-readme/SKILL.md",
+      "computedHash": "6f12bae2a09486db9c62192331842c03ca752699e83a19deaf1faef50b57e8cf"
+    },
+    "generate-readme-screenshots": {
+      "source": "coder/mux",
+      "sourceType": "github",
+      "skillPath": ".mux/skills/generate-readme-screenshots/SKILL.md",
+      "computedHash": "e93f557ebf91894f3d6dc7fac25b2b7126913be34a3263204d2c1aec0e8dfc6f"
+    },
+    "github-readme": {
+      "source": "thatrebeccarae/claude-marketing",
+      "sourceType": "github",
+      "skillPath": "skills/github-readme/SKILL.md",
+      "computedHash": "9a47f3f0985e846562ebdf977e83ec034e66aa490b372c86cb966d36e6d79945"
+    },
+    "humanize-readme": {
+      "source": "b4r7x/agent-skills",
+      "sourceType": "github",
+      "skillPath": "humanize-readme/SKILL.md",
+      "computedHash": "1b6942ba1bfc693bb088adf1b622331dc5dbeef952de9589b728a73bc26dab96"
+    },
+    "indexion-readme": {
+      "source": "trkbt10/indexion-skills",
+      "sourceType": "github",
+      "skillPath": "skills/indexion-readme/SKILL.md",
+      "computedHash": "a45ec68296705a05d11b55485a1bfef0d1b768222cd677660e18d9e5fd7e56c0"
+    },
+    "make-readme": {
+      "source": "gupsammy/claudest",
+      "sourceType": "github",
+      "skillPath": "plugins/claude-coding/skills/make-readme/SKILL.md",
+      "computedHash": "3fde3d95386949946bbe0f912f0783b77f5d85873bc76813fc0d6ee09304750c"
+    },
+    "prowler-readme-table": {
+      "source": "prowler-cloud/prowler",
+      "sourceType": "github",
+      "skillPath": "skills/prowler-readme-table/SKILL.md",
+      "computedHash": "969d2da4ed35327eacbb6e8da590c3e38823eec20347fc36b920bb901a8600e9"
+    },
+    "pypi-readme-creator": {
+      "source": "jamie-bitflight/claude_skills",
+      "sourceType": "github",
+      "skillPath": "plugins/python3-development/skills/pypi-readme-creator/SKILL.md",
+      "computedHash": "525b50aaf5f2b37b28b687952db955d65f47a7f27ef0a218c6d77951a079d0e1"
+    },
+    "readme": {
+      "source": "tushaarmehtaa/tushar-skills",
+      "sourceType": "github",
+      "skillPath": "readme/SKILL.md",
+      "computedHash": "a6e06514379f601b693a2449275242a6d45256b2705f5e93491bd73d767e3c7f"
+    },
+    "readme-badger": {
+      "source": "jamie-bitflight/claude_skills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/readme-badger/SKILL.md",
+      "computedHash": "30c92887d8b7e1d5d402f014d27becb722cff01b38222d0412c332616997ca91"
+    },
+    "readme-blueprint-generator": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/readme-blueprint-generator/SKILL.md",
+      "computedHash": "e2c7dabf2e455794260f1516e2ceda6a82dc92a409578cc184fcb0f45bddca54"
+    },
+    "readme-com": {
+      "source": "membranedev/application-skills",
+      "sourceType": "github",
+      "skillPath": "skills/readme-com/SKILL.md",
+      "computedHash": "aaffe8888514f6bd67717ca9a80378e4f8712dc727320179a9629f1840a688c4"
+    },
+    "readme-craft": {
+      "source": "majesticlabs-dev/majestic-marketplace",
+      "sourceType": "github",
+      "skillPath": "plugins/majestic-engineer/skills/readme-craft/SKILL.md",
+      "computedHash": "ddbee75a54b0e12249a1a8062c029dd0e75a5ef19056be63dccf42761fb2f8b8"
+    },
+    "readme-creator": {
+      "source": "mblode/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/readme-creator/SKILL.md",
+      "computedHash": "7cb227d35d40e8379cbbbc0e9b45a9fe28dd8d3c819e77e90d706869bf8dc0ca"
+    },
+    "readme-generator": {
+      "source": "patricio0312rev/skills",
+      "sourceType": "github",
+      "skillPath": "foundation/readme-generator/SKILL.md",
+      "computedHash": "654b6ca8f7061142b6c54f4f1cb457821aefef5237e29e0ee9199bef4c93b547"
+    },
+    "readme-sync": {
+      "source": "shipshitdev/library",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/readme-sync/SKILL.md",
+      "computedHash": "4f3d5c0213bed9d7497b4ae951ebbf7acbd0075cb64a354dda0636670f3bba78"
+    },
+    "readme-updater": {
+      "source": "ovachiever/droid-tings",
+      "sourceType": "github",
+      "skillPath": "skills/readme-updater/SKILL.md",
+      "computedHash": "46be328b48976bea4808247250cd09bf74995f273e1e2dcb52950e661ed90176"
+    },
+    "readme-updates": {
+      "source": "sgcarstrends/sgcarstrends",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/readme-updates/SKILL.md",
+      "computedHash": "b3055938b318227d48cd93c0c105528c2f88fb4da9f7d20c088987206e44c75f"
+    },
+    "readme-wizard": {
+      "source": "debs-obrien/learn-agent-skills",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/readme-wizard/SKILL.md",
+      "computedHash": "ae787bd4f612fcd1bfa1a3a8337c6c3976de9b99fef61922891f12799d6bfd41"
+    },
+    "readme-writer": {
+      "source": "steveclarke/dotfiles",
+      "sourceType": "github",
+      "skillPath": "ai/skills/readme-writer/SKILL.md",
+      "computedHash": "13fa6ee439dc67194c8f550934ac2420e1669a45ea383561a137f6ad61a691c3"
+    },
+    "repository-readme-writer": {
+      "source": "jpcaparas/skills",
+      "sourceType": "github",
+      "skillPath": "skills/repository-readme-writer/SKILL.md",
+      "computedHash": "e0f88cd1986c5f59528ffad9f0eb82ac1f8951738dcd13f64608b09388cf23f5"
+    },
+    "sc-readme": {
+      "source": "tony363/superclaude",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/sc-readme/SKILL.md",
+      "computedHash": "75e1cf43d04bcfa0695ef4087ad933abfcc9ed24ebfa21dc3da7f23663addc0a"
+    },
+    "standard-readme": {
+      "source": "tenequm/skills",
+      "sourceType": "github",
+      "skillPath": "skills/standard-readme/SKILL.md",
+      "computedHash": "9991cd498b36e1b800de7037302984d62c9bc55f89a6435d2788194d806abc13"
+    },
+    "update-readme": {
+      "source": "gupsammy/claudest",
+      "sourceType": "github",
+      "skillPath": "plugins/claude-coding/skills/update-readme/SKILL.md",
+      "computedHash": "b94acd3c1534a8529004568c54375a556dbfd1907fb14bdcef8f2e1ca041c47f"
+    },
+    "wp-readme-optimizer": {
+      "source": "jdevalk/skills",
+      "sourceType": "github",
+      "skillPath": "wp-readme-optimizer/SKILL.md",
+      "computedHash": "83925a9812be2567abe4e62aba0db24b1fa58d466abb78d0e8ee0a06b7a35cad"
+    },
+    "write-readme": {
+      "source": "wilbeibi/wilbeibi-skills",
+      "sourceType": "github",
+      "skillPath": "skills/write-readme/SKILL.md",
+      "computedHash": "feab66c3394ff1a16f5478816daa849cbd3ef7433a675eeaf2732e60e8d4dc82"
+    },
+    "zr-readme": {
+      "source": "zenon-red/skills",
+      "sourceType": "github",
+      "skillPath": "zr-readme/SKILL.md",
+      "computedHash": "d3deca2ff952826d98169b8ae3a62758aab209e4f28b28922ec4d59527ebe3b5"
+    }
+  }
+}
