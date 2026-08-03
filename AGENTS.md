@@ -26,7 +26,7 @@ authoritative installed set, not `references.txt`.
   it is meant to mirror upstream and is validated against `computedHash` in the
   lockfile. Editing a file will make it diverge from its recorded hash.
 - To add or update a skill, run the `skills` CLI (`npx skills add <repo> --skill
-  <name>`) rather than copying files in manually, so the lockfile stays correct.
+<name>`) rather than copying files in manually, so the lockfile stays correct.
 - The AGENTS.md / README.md / SKILL.md files found under `references/skills/**`
   belong to the vendored skills, not to this repo. Don't mistake them for
   repo-level instructions.

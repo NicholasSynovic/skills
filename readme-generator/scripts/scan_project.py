@@ -252,7 +252,9 @@ def extract_metadata(root: Path) -> dict[str, str]:
         version = str(data.get("version", "") or "")
     elif pyproject.exists():
         data = load_toml(pyproject)
-        project = data.get("project", {}) if isinstance(data.get("project"), dict) else {}
+        project = (
+            data.get("project", {}) if isinstance(data.get("project"), dict) else {}
+        )
         poetry = (
             data.get("tool", {}).get("poetry", {})
             if isinstance(data.get("tool"), dict)
@@ -264,7 +266,9 @@ def extract_metadata(root: Path) -> dict[str, str]:
         version = str(src.get("version", "") or "")
     elif cargo.exists():
         data = load_toml(cargo)
-        pkgsec = data.get("package", {}) if isinstance(data.get("package"), dict) else {}
+        pkgsec = (
+            data.get("package", {}) if isinstance(data.get("package"), dict) else {}
+        )
         name = str(pkgsec.get("name", "") or "")
         description = str(pkgsec.get("description", "") or "")
         version = str(pkgsec.get("version", "") or "")

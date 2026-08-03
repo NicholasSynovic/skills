@@ -20,8 +20,8 @@ General severity meaning:
 
 ## 1. Accessibility (code approachability)
 
-**Definition.** How easily a person who is not the author can *discover*, *set
-up*, *run*, and *begin contributing to* this code. This is about approachability
+**Definition.** How easily a person who is not the author can _discover_, _set
+up_, _run_, and _begin contributing to_ this code. This is about approachability
 of the codebase — not UI/WCAG accessibility.
 
 **Look for:** missing or wrong setup/run instructions; undocumented environment
@@ -31,6 +31,7 @@ undocumented; no license clarity for would-be users; onboarding that assumes
 tribal knowledge.
 
 **Severity anchors**
+
 - **5** — A new user genuinely cannot run or set up the project: instructions
   are absent or broken, required config is undocumented, no working entry point.
 - **4** — Setup is possible but painful and error-prone; key prerequisites are
@@ -52,6 +53,7 @@ code; undocumented parameters, return values, errors, side effects; missing
 rationale for non-obvious decisions; examples that don't run.
 
 **Severity anchors**
+
 - **5** — Documentation is absent or so wrong it misleads users into breaking
   things; a critical public API is undocumented.
 - **4** — Major surfaces (primary API, main workflow) are undocumented or stale
@@ -71,6 +73,7 @@ dependencies; dead code; configuration hard-coded where it should be
 parameterized; no error handling where failure is likely.
 
 **Severity anchors**
+
 - **5** — Changing the code safely is effectively impossible: no tests around
   critical logic plus deep coupling, or a structure that guarantees regressions.
 - **4** — High risk of regressions on change: major duplication, a god
@@ -91,6 +94,7 @@ surprising behavior that contradicts names/signatures; clever code without
 explanation; inconsistent abstractions; comments that lie.
 
 **Severity anchors**
+
 - **5** — Code is effectively unreadable where correctness depends on
   understanding it (e.g. critical logic that no reasonable reader can follow).
 - **4** — Core logic is seriously confusing: misleading names or behavior that
@@ -111,6 +115,7 @@ brittle integration points; missing versioning on public interfaces/APIs;
 encoding/locale assumptions.
 
 **Severity anchors**
+
 - **5** — Cannot integrate with a required system/platform, or breaks a
   standard contract other components depend on.
 - **4** — Serious portability/integration barrier likely to block real use
@@ -129,6 +134,7 @@ over- or under-generalization; missing extension points; utilities buried in
 unrelated modules; unclear public vs. private surface.
 
 **Severity anchors**
+
 - **5** — A component that clearly should be reusable is impossible to reuse
   without copy-paste-and-rewrite due to entangled dependencies/global state.
 - **4** — Significant coupling or hidden state blocks reuse of an important
@@ -150,6 +156,7 @@ CI or automated checks; accumulating tech debt with no path to pay it down;
 resource leaks or unbounded growth.
 
 **Severity anchors**
+
 - **5** — Imminent breakage or legal/security risk: known-vulnerable or
   abandoned critical dependency, EOL runtime, license conflict that forbids use.
 - **4** — Deprecated core dependency/API that will break on the next upgrade; no
@@ -169,6 +176,7 @@ duplicated concepts that should be unified; violating the project's architectura
 boundaries; configuration that contradicts project-wide settings.
 
 **Severity anchors**
+
 - **5** — Directly conflicts with or bypasses core project architecture in a way
   that will cause breakage or divergence (e.g. a parallel, incompatible
   implementation of a core system).
