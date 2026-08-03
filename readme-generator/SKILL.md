@@ -1,7 +1,7 @@
 <!--
   SKILL.md — work in progress, built section by section from README.features.md.
   Frontmatter (name / description / allowed-tools) is intentionally deferred.
-  Sections present so far: 1 (scanning).
+  Sections present so far: 1 (scanning), 2 (type awareness & section selection).
 -->
 
 ## Step 1 — Scan the project
@@ -52,12 +52,9 @@ them yourself using `Read`, `Glob`, and `Grep`, guided by the scan output:
   blocks, and any `examples/` directory. **Never fabricate examples** — if none
   exist, say so or omit the section.
   (`references/skills/accelint-readme-writer/references/codebase-analysis.md`.)
-- **Project type.** Classify as one of: CLI/tool, library/SDK, application,
-  framework, monorepo, collection, or personal — using signals (a `bin` field
-  and CLI parsing → CLI; exported API + no entry app → library; etc.). This
-  drives section and voice choices in the next step.
-  (`references/skills/github-readme/SKILL.md`,
-  `references/skills/readme-creator/SKILL.md`.)
+- **Project type.** Classified in Step 2 from scanner signals, not here. If a
+  read of the code gives you a provisional type, note it — but the decisive
+  rules and the section/voice dispatch it drives live in Step 2.
 - **Read the sibling docs** the scanner listed (`sibling_docs`) rather than
   reconstructing architecture from source.
   (`references/skills/accelint-readme-writer/SKILL.md`,
@@ -75,3 +72,121 @@ them yourself using `Read`, `Glob`, and `Grep`, guided by the scan output:
   license), skip the dependent section rather than invent content.
 - **Offline.** The scanner makes no network requests; keep it that way. Fetch
   anything external only on explicit need, and never for private repos.
+
+## Step 2 — Classify the project & select sections
+
+The scanner tells you *what is there*; this step decides *what the README should
+contain*. Turn the facts (Step 1a) and your reading of the code (Step 1b) into
+exactly one **project type**, then dispatch a **section set** and a **voice
+profile**. Do this before writing any prose.
+
+### 2a. Detect the project type
+
+Classify into exactly one of these seven types: **CLI/tool, library/SDK,
+application, framework, monorepo, collection, personal.** Detect from evidence —
+mostly fields the scanner already reported — not from what the user says.
+
+**First matching row wins**, top to bottom (most specific first):
+
+| Decisive signal (from the scan) | Type |
+| --- | --- |
+| `is_monorepo` is true (≥3 sub-manifests / `packages` populated) | monorepo |
+| A `skills/` dir of `SKILL.md` files, or a `templates/`/`actions/` dir of many like files | collection |
+| Manifest declares a `bin` (npm), `[project.scripts]` (pyproject), `[[bin]]` (Cargo), or `go.mod` + root `main.go`; and/or a CLI parser dep (commander/yargs/clap/argparse) | CLI/tool |
+| Plugin/middleware architecture with a documented config/extension API (framework config, `register`/`use` extension points) | framework |
+| Web/app framework config with no publish (`next.config.*`, `nuxt.config.*`, `vite.config.*`, `app/`/`pages/` + framework config), or `"private": true` app | application |
+| Manifest sets `main`/`exports`/`module` (or `[lib]` / library `pyproject`) and has no `bin` | library/SDK |
+| Single-owner project with no registry publish and a personal framing (dotfiles, hobby repo, first-person intent) | personal |
+
+Rules:
+
+- **Detect before asking.** Read code first; only ask the user what the code
+  cannot reveal (the "why", the audience, forced-in/out sections).
+- **Dual roles.** If two types fit (a CLI that also exports an API; a framework
+  published as a library), pick **how most users consume it** and fold the
+  secondary role into one extra section rather than switching type.
+- **Wrong-type smell test.** A library README with a `git clone` getting-started,
+  or an app README carrying registry/version badges, means the type was guessed
+  wrong — reclassify.
+
+(Signals distilled from
+`references/skills/github-readme/REFERENCE.md` (lines 362-385) and
+`references/skills/readme-creator/SKILL.md` (lines 34-52, 110).)
+
+### 2b. Select sections (type → section matrix)
+
+Include every **Required** section; add **Recommended** when the scan supports it;
+add **Optional** only when it earns its place. Skip any selected section whose
+data the scan proves absent (note the assumption) — never fabricate to fill it.
+These are section *names*; the skeletons come later (templates step).
+
+Legend: **R** required · **r** recommended · **o** optional · **—** omit.
+
+| Section | CLI/tool | library/SDK | application | framework | monorepo | collection | personal |
+| --- | :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| Title + one-liner | R | R | R | R | R | R | R |
+| Badges | R | R | — | R | — | r | — |
+| Features / highlights | r | r | R | r | — | — | o |
+| Install | R | R | r | R | r | r | R |
+| Usage / Quick start | R | R | R | R | R | R | R |
+| API Reference / Options | R | R | — | R | — | — | — |
+| Configuration | r | r | R | R | o | — | — |
+| Environment variables | — | — | R | — | — | — | — |
+| What's Here (catalog / index) | — | — | — | — | — | R | — |
+| How to Extend | — | — | — | R | — | o | — |
+| Packages / Components table | — | — | — | — | R | — | — |
+| Architecture | — | — | r | r | o | — | — |
+| Requirements | R | R | o | R | r | o | — |
+| Why I built this | — | — | — | — | — | — | R |
+| Who this is for | r | r | — | r | — | r | — |
+| Contributing | r | R | r | r | r | r | — |
+| License | R | R | R | R | R | R | o |
+
+Notes:
+
+- **No badges (and no version column) for personal or monorepo** projects here —
+  they have no registry entry behind them, so badges render broken or stale.
+  Collections get badges only if the collection itself is published.
+- The **Packages / Components table** appears only when `is_monorepo` is true; it
+  is driven by the scanner's `packages` list.
+- **What's Here** (collection) and **How to Extend** (framework/collection) are
+  the catalog/extension-point sections folded in from the config/XDG family.
+
+(Reconciled from
+`references/skills/github-readme/SKILL.md` (lines 207-223),
+`references/skills/readme-creator/SKILL.md` (lines 61-80, 111), and
+`references/skills/crafting-effective-readmes/section-checklist.md`.)
+
+### 2c. Voice profile per type
+
+The type also sets tone. Lead the intro in the matching voice:
+
+| Type | Default tone | Example opening |
+| --- | --- | --- |
+| CLI/tool | Direct, practical | "Fast Markdown linting for CI pipelines." |
+| library/SDK | Technical, precise | "A typed HTTP client for the Stripe API." |
+| application | Product-focused, clear | "Real-time project dashboard with team analytics." |
+| framework | Precise, extensibility-forward | "A plugin-driven static-site engine." |
+| monorepo | Organized, scannable | "Six packages that power the Acme design system." |
+| collection | Organized, scannable | "50+ reusable GitHub Actions workflows." |
+| personal | First-person, opinionated | "I needed a better way to track reading habits." |
+
+- **Always:** direct, specific, opinionated; short paragraphs (≤4 sentences).
+- **Never:** hedge language, marketing fluff, passive voice in problem
+  statements, emojis in prose.
+- **Default professional.** First person is opt-in — natural for `personal`,
+  otherwise only when the user asks. The full humanize / lint pass is a later
+  step; this is just the tone to write in.
+
+(Voice matrix from
+`references/skills/github-readme/SKILL.md` (lines 227-238).)
+
+### Guardrails
+
+- **Classify before writing.** A mismatched type sends readers down a dead path
+  (see the wrong-type smell test in 2a).
+- **Required ≠ invent.** Include every Required section, but if the scan proves
+  its data does not exist, omit it and record the assumption rather than
+  fabricate.
+- **One type, one dispatch.** Resolve dual roles in 2a; do not blend two full
+  section sets.
