@@ -7,7 +7,7 @@ Offline and deterministic: no network calls. This is the mechanical
 are left to the agent, which reads this output first.
 
 Usage:
-    python3 scan_project.py [path] [--pretty]
+    python3 scan_project.py [path]
 
 Requirements (see DEPENDENCIES.md):
 - Python >= 3.11 (uses the stdlib ``tomllib``)
@@ -674,21 +674,17 @@ def main() -> int:
         description="Scan a project and emit README-relevant facts as JSON (offline)."
     )
     parser.add_argument("repo", nargs="?", default=".", help="Project path to scan")
-    parser.add_argument("--pretty", action="store_true", help="Pretty-print JSON")
     args = parser.parse_args()
 
     root = Path(args.repo)
     if not root.exists() or not root.is_dir():
         parser.error(f"path does not exist or is not a directory: {root}")
 
-    indent = 2 if args.pretty else None
-
     dependency_error = check_tree() or check_scc() or check_licensee()
     if dependency_error is not None:
         print(
             json.dumps(
                 {"error": dependency_error, "root": str(root.resolve())},
-                indent=indent,
                 sort_keys=True,
             )
         )
@@ -699,7 +695,7 @@ def main() -> int:
     except Exception as exc:  # never crash the workflow
         data = {"error": f"{type(exc).__name__}: {exc}", "root": str(root.resolve())}
 
-    print(json.dumps(data, indent=indent, sort_keys=True))
+    print(json.dumps(data, sort_keys=True))
     return 0
 
 

@@ -16,7 +16,7 @@ Run the bundled scanner and read its JSON output. It is offline and
 deterministic — no network calls — and never crashes on a partial project.
 
 ```bash
-python3 scripts/scan_project.py <project-dir> --pretty
+python3 scripts/scan_project.py <project-dir>
 ```
 
 The output is the source of truth for mechanical facts. Fields:
