@@ -15,6 +15,8 @@ Requirements (see DEPENDENCIES.md):
   ``tree -J``).
 - ``scc`` >= 3.7.0 (hard requirement; used for code-line counting via
   ``scc --by-file -f json``).
+- ``licensee`` >= 10.0.0 (hard requirement; used for license detection via
+  ``licensee detect --json``).
 If a required tool is missing or too old the scanner emits a JSON error object
 and exits non-zero.
 
@@ -133,27 +135,12 @@ PRUNE_DIRS = {
     "venv",
 }
 
-LICENSE_MARKERS = [
-    ("Apache License", "Apache-2.0"),
-    ("Apache-2.0", "Apache-2.0"),
-    ("MIT License", "MIT"),
-    ("Permission is hereby granted, free of charge", "MIT"),
-    ("GNU GENERAL PUBLIC LICENSE", "GPL"),
-    ("GNU AFFERO", "AGPL"),
-    ("GNU LESSER", "LGPL"),
-    ("BSD 3-Clause", "BSD-3-Clause"),
-    ("BSD 2-Clause", "BSD-2-Clause"),
-    ("Redistribution and use in source and binary forms", "BSD"),
-    ("Mozilla Public License", "MPL-2.0"),
-    ("The Unlicense", "Unlicense"),
-    ("ISC License", "ISC"),
-]
-
 MONOREPO_MIN_PACKAGES = 3
 MAX_DEPTH = 3
 TREE_DEPTH = 2
 MIN_TREE_VERSION = (2, 3, 2)
 MIN_SCC_VERSION = (3, 7, 0)
+MIN_LICENSEE_VERSION = (10, 0, 0)
 
 
 # ---------------------------------------------------------------------------
@@ -300,24 +287,38 @@ def extract_metadata(root: Path) -> dict[str, str]:
 
 
 def detect_license(root: Path) -> str:
-    """Detect the SPDX license id from LICENSE* text, falling back to package.json."""
-    for fname in ("LICENSE", "LICENSE.md", "LICENSE.txt", "LICENCE", "COPYING"):
-        f = root / fname
-        if f.exists():
-            try:
-                head = f.read_text(encoding="utf-8", errors="ignore")[:2000]
-            except OSError:
-                return f"Found ({fname})"
-            for marker, spdx in LICENSE_MARKERS:
-                if marker.lower() in head.lower():
-                    return spdx
-            return f"Found ({fname})"
-    # Manifest-declared license as a fallback.
-    pkg = load_json(root / "package.json")
-    lic = pkg.get("license")
-    if isinstance(lic, str) and lic:
-        return lic
-    return ""
+    """Return the SPDX license id from ``licensee detect --json``.
+
+    Reads the first entry of the reported ``licenses`` list. Returns "" if
+    detection fails, no license is found, or the top result is ``NOASSERTION``.
+    """
+    try:
+        out = subprocess.run(
+            ["licensee", "detect", "--json", str(root)],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return ""
+
+    try:
+        data = json.loads(out.stdout)
+    except json.JSONDecodeError:
+        return ""
+
+    licenses = data.get("licenses") if isinstance(data, dict) else None
+    if not isinstance(licenses, list) or not licenses:
+        return ""
+
+    first = licenses[0]
+    if not isinstance(first, dict):
+        return ""
+
+    spdx = first.get("spdx_id")
+    if not isinstance(spdx, str) or spdx == "NOASSERTION":
+        return ""
+    return spdx
 
 
 def detect_package_manager(root: Path) -> str:
@@ -456,6 +457,39 @@ def check_scc() -> str | None:
         return (
             f"scc {'.'.join(map(str, version))} is too old; "
             f"require >= {'.'.join(map(str, MIN_SCC_VERSION))} (see DEPENDENCIES.md)."
+        )
+    return None
+
+
+def check_licensee() -> str | None:
+    """Return an error message if ``licensee`` is missing or older than the minimum.
+
+    Returns None when a suitable ``licensee`` (>= MIN_LICENSEE_VERSION) is available.
+    """
+    try:
+        out = subprocess.run(
+            ["licensee", "version"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except FileNotFoundError:
+        return (
+            "'licensee' is required but was not found on PATH. "
+            f"Install licensee >= {'.'.join(map(str, MIN_LICENSEE_VERSION))} (see DEPENDENCIES.md)."
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        return f"failed to run 'licensee version': {exc}"
+
+    match = re.search(r"(\d+)\.(\d+)\.(\d+)", out.stdout)
+    if not match:
+        return f"could not parse licensee version from: {out.stdout.strip()!r}"
+
+    version = tuple(int(part) for part in match.groups())
+    if version < MIN_LICENSEE_VERSION:
+        return (
+            f"licensee {'.'.join(map(str, version))} is too old; "
+            f"require >= {'.'.join(map(str, MIN_LICENSEE_VERSION))} (see DEPENDENCIES.md)."
         )
     return None
 
@@ -649,7 +683,7 @@ def main() -> int:
 
     indent = 2 if args.pretty else None
 
-    dependency_error = check_tree() or check_scc()
+    dependency_error = check_tree() or check_scc() or check_licensee()
     if dependency_error is not None:
         print(
             json.dumps(
