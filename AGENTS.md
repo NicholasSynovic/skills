@@ -2,35 +2,77 @@
 
 ## What this repo is
 
-A curated **collection of third-party README-generator skills** fetched from
-public GitHub repos with the `skills` CLI (`npx skills add ...`). It is a
-reference corpus, not an application: there is no build, test, lint, or runtime.
+A workspace holding **first-party OpenCode/Claude skills under construction** plus
+a **vendored corpus** of third-party README-generator skills used as design input.
+There is no application, server, or package build.
 
-## Layout
+- `readme-generator/` — the main first-party skill being built section by section
+  from `README.features.md` (a 12-cluster feature inventory of the vendored
+  skills). See `readme-generator/SKILL.md`.
+- `review-abilites/` — a second first-party skill (code-quality review →
+  `TODO.ability.md`). Independent of `readme-generator/`.
+- `readme-generator/references/vendor/<skill>/` — 34 vendored third-party skills
+  (design references, not part of the shipped skill).
 
-- `readme-generator/references.txt` — the source-of-truth list of `npx skills add`
-  commands used to populate this collection (49 commands).
-- `readme-generator/skills-lock.json` — lockfile written by the `skills` CLI.
-  Maps skill name -> GitHub source, `skillPath`, and content hash. 34 entries.
-- `readme-generator/references/skills/<skill-name>/` — the **vendored** skill
-  content (34 dirs, each usually a `SKILL.md` plus its own references/assets).
+## First-party vs vendored (do not confuse them)
 
-Note the mismatch: `references.txt` lists 49 adds but only 34 resolved into the
-lockfile and `references/skills/`. Some sources fail to resolve or duplicate an
-existing skill name; treat `skills-lock.json` + `references/skills/` as the
-authoritative installed set, not `references.txt`.
+- **Edit freely:** `readme-generator/SKILL.md`, `scripts/`, `templates/`,
+  `references/*.md` (e.g. `section-library.md`), `DEPENDENCIES.md`,
+  `README.features.md`; all of `review-abilites/`.
+- **Do NOT hand-edit** `readme-generator/references/vendor/**` — vendored upstream
+  content, validated against `computedHash` in the `skills` lockfile. Editing
+  diverges it from its hash. Add/update via the `skills` CLI
+  (`npx skills add <repo> --skill <name>`), not by copying files.
+- The `SKILL.md` / `AGENTS.md` / `README.md` files _inside_ `references/vendor/**`
+  belong to vendored skills, not this repo.
+- Cite vendored sources as `references/vendor/<skill>/file (lines X-Y)`. The path
+  is `references/vendor/`, **not** `references/skills/` (a stale path that keeps
+  reappearing — grep for it before committing).
+- `references.txt` lists 49 `npx skills add` commands but only 34 resolved; trust
+  the lockfile + `references/vendor/` as the installed set, not `references.txt`.
+  No `skills-lock.json` is checked in at the moment.
 
-## Working conventions
+## Toolchain — pre-commit is the source of truth
 
-- `references/skills/**` is vendored external content. Do **not** hand-edit it;
-  it is meant to mirror upstream and is validated against `computedHash` in the
-  lockfile. Editing a file will make it diverge from its recorded hash.
-- To add or update a skill, run the `skills` CLI (`npx skills add <repo> --skill
-<name>`) rather than copying files in manually, so the lockfile stays correct.
-- The AGENTS.md / README.md / SKILL.md files found under `references/skills/**`
-  belong to the vendored skills, not to this repo. Don't mistake them for
-  repo-level instructions.
+There is no Makefile/pyproject. All lint/format/checks run via
+`.pre-commit-config.yaml`. Run before committing:
 
-## Git
+```bash
+pre-commit run --all-files      # or: pre-commit run --files <path>
+```
 
-The repo currently has **no commits** (empty `master`); everything is untracked.
+Non-obvious gotchas baked into the hooks:
+
+- **`no-commit-to-branch` blocks commits to `main`.** Work on a branch and open a
+  PR; a direct `git commit` on `main` fails the hook.
+- **`pretty-format-json --autofix`** rewrites every JSON file to 4-space indent,
+  `--no-sort-keys`. Emit JSON in that shape or the hook will reflow it.
+- **ruff** (`ruff-check --fix` + `ruff-format`) and **bandit** run on Python;
+  the only Python is `readme-generator/scripts/scan_project.py`. Keep it clean.
+- **prettier** (system-installed) formats md/json/yaml/etc. at
+  `--tab-width 4 --print-width 80 --trailing-comma es5`, LF.
+- `.editorconfig` sets `insert_final_newline = false`, but the pre-commit
+  `end-of-file-fixer` hook enforces a trailing newline — the hook wins on commit.
+- pre-commit pins `python3.14`; local env is 3.13. `scan_project.py` requires
+  **Python ≥ 3.11** (stdlib `tomllib`).
+
+## scan_project.py
+
+- Run: `python3 readme-generator/scripts/scan_project.py <project-dir>` → JSON on
+  stdout. Offline, deterministic, never crashes on partial projects.
+- **Hard external deps** (see `readme-generator/DEPENDENCIES.md`): `tree` ≥ 2.3.2,
+  `scc` ≥ 3.7.0, `licensee` ≥ 10.0.0. Missing/old → JSON `{"error": ...}` + exit 1.
+  `git` is optional (degrades gracefully).
+- Verify edits with `python3 -m py_compile readme-generator/scripts/scan_project.py`
+  and a real run; there is no test suite.
+
+## Building the README skill
+
+- `README.features.md` is the section-by-section build plan; `SKILL.md`'s header
+  comment tracks which sections (steps) are done. Sections 1–3 exist.
+- Content model: **Step 1** scans (facts via script + agent judgement), **Step 2**
+  classifies project type (7 types) and selects sections via a matrix, **Step 3**
+  fills per-type skeletons in `templates/` (literal `{{token}}` fill-ins) filtered
+  by depth tier. Keep these consistent when editing one of them.
+- Anti-fabrication is a hard rule throughout: never invent examples/values; omit a
+  section when scan data is absent.

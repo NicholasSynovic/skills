@@ -1,7 +1,8 @@
 <!--
   SKILL.md — work in progress, built section by section from README.features.md.
   Frontmatter (name / description / allowed-tools) is intentionally deferred.
-  Sections present so far: 1 (scanning), 2 (type awareness & section selection).
+  Sections present so far: 1 (scanning), 2 (type awareness & section selection),
+  3 (templates & section assembly), 4 (badges).
 -->
 
 ## Step 1 — Scan the project
@@ -47,27 +48,27 @@ them yourself using `Read`, `Glob`, and `Grep`, guided by the scan output:
 - **Public API / signatures.** Start from manifest entry points (`main`,
   `module`, `exports`, `bin`), follow re-exports, and capture the public
   functions/classes with their parameter and return types. (Pattern:
-  `references/skills/accelint-readme-writer/references/codebase-analysis.md`.)
+  `references/vendor/accelint-readme-writer/references/codebase-analysis.md`.)
 - **Real usage examples.** Pull examples from tests, `@example`/docstring
   blocks, and any `examples/` directory. **Never fabricate examples** — if none
   exist, say so or omit the section.
-  (`references/skills/accelint-readme-writer/references/codebase-analysis.md`.)
+  (`references/vendor/accelint-readme-writer/references/codebase-analysis.md`.)
 - **Project type.** Classified in Step 2 from scanner signals, not here. If a
   read of the code gives you a provisional type, note it — but the decisive
   rules and the section/voice dispatch it drives live in Step 2.
 - **Read the sibling docs** the scanner listed (`sibling_docs`) rather than
   reconstructing architecture from source.
-  (`references/skills/accelint-readme-writer/SKILL.md`,
-  `references/skills/readme-blueprint-generator/SKILL.md`.)
+  (`references/vendor/accelint-readme-writer/SKILL.md`,
+  `references/vendor/readme-blueprint-generator/SKILL.md`.)
 - **Rank evidence** when sources disagree: manifest scripts and declared config
   outrank a lockfile, which outranks a version-manager file, which outranks a
   guess. Prefer the strongest evidence and note assumptions.
-  (`references/skills/repository-readme-writer/references/repository-audit.md`.)
+  (`references/vendor/repository-readme-writer/references/repository-audit.md`.)
 
 ### Guardrails
 
 - **Read code before asking the user.** Only ask about things the scan and code
-  cannot answer. (`references/skills/readme/SKILL.md`.)
+  cannot answer. (`references/vendor/readme/SKILL.md`.)
 - **No fabrication.** If a fact is missing (empty scanner field, no examples, no
   license), skip the dependent section rather than invent content.
 - **Offline.** The scanner makes no network requests; keep it that way. Fetch
@@ -110,8 +111,8 @@ Rules:
   wrong — reclassify.
 
 (Signals distilled from
-`references/skills/github-readme/REFERENCE.md` (lines 362-385) and
-`references/skills/readme-creator/SKILL.md` (lines 34-52, 110).)
+`references/vendor/github-readme/REFERENCE.md` (lines 362-385) and
+`references/vendor/readme-creator/SKILL.md` (lines 34-52, 110).)
 
 ### 2b. Select sections (type → section matrix)
 
@@ -153,9 +154,9 @@ Notes:
   the catalog/extension-point sections folded in from the config/XDG family.
 
 (Reconciled from
-`references/skills/github-readme/SKILL.md` (lines 207-223),
-`references/skills/readme-creator/SKILL.md` (lines 61-80, 111), and
-`references/skills/crafting-effective-readmes/section-checklist.md`.)
+`references/vendor/github-readme/SKILL.md` (lines 207-223),
+`references/vendor/readme-creator/SKILL.md` (lines 61-80, 111), and
+`references/vendor/crafting-effective-readmes/section-checklist.md`.)
 
 ### 2c. Voice profile per type
 
@@ -179,7 +180,7 @@ The type also sets tone. Lead the intro in the matching voice:
   step; this is just the tone to write in.
 
 (Voice matrix from
-`references/skills/github-readme/SKILL.md` (lines 227-238).)
+`references/vendor/github-readme/SKILL.md` (lines 227-238).)
 
 ### Guardrails
 
@@ -190,3 +191,205 @@ The type also sets tone. Lead the intro in the matching voice:
   fabricate.
 - **One type, one dispatch.** Resolve dual roles in 2a; do not blend two full
   section sets.
+- The section set you pick here is _realized_ by the Step 3 skeletons — one
+  fill-in template per type under `templates/`. Step 2 decides **which** sections;
+  Step 3 lays them out and fills them.
+
+## Step 3 — Choose a template & assemble sections
+
+Step 2 gave you a type and a section set. Now pick a depth, load the matching
+fill-in skeleton, and fill it from the scan. The skeletons are scaffolding: every
+`{{token}}` must be replaced and every guiding HTML comment deleted before you
+ship.
+
+### 3a. Pick a depth tier
+
+The tier decides how many of the Step 2 sections to include:
+
+| Tier                   | Use for                                             | Includes                                                    |
+| ---------------------- | --------------------------------------------------- | ----------------------------------------------------------- |
+| **minimal**            | small utilities, internal tools, one clear use case | **Required** sections only                                  |
+| **standard** (default) | projects expecting external users or contributors   | Required **+ Recommended**                                  |
+| **comprehensive**      | mature projects, public APIs, large communities     | Required + Recommended **+ Optional** and extended sections |
+
+Map the tier onto the Step 2 matrix markers: minimal = **R**; standard = **R + r**;
+comprehensive = **R + r + o** (plus anything from the section library). Default to
+standard unless the project or the user says otherwise.
+(Tiers from `references/vendor/make-readme/SKILL.md` lines 53-58.)
+
+### 3b. Load the type skeleton
+
+Open `templates/<type>.md` for the type you classified in Step 2 (`cli`,
+`library`, `application`, `framework`, `monorepo`, `collection`, `personal`). Each
+skeleton lays the Step 2 sections out in **inverted-pyramid order** — strongest
+fact first, then install/quick start, then the "why", then reference detail, then
+the tail (contributing, license). **Type = shape, depth = filter:** the file gives
+the shape; drop the sections your 3a tier excludes.
+
+Each skeleton opens with two filled title + one-liner examples (few-shot). Use
+them to calibrate the voice for that type (per the Step 2 voice profile), then
+**delete that comment** along with every other HTML comment.
+(Skeletons reconciled from
+`references/vendor/readme-creator/references/section-templates.md`; order from
+`references/vendor/write-readme/REFERENCE.md` lines 3-21.)
+
+### 3c. Write the intro (4-paragraph formula)
+
+The slot under the title carries the most weight. Build it from four short beats:
+
+1. One memorable sentence — what it **is**.
+2. One to three sentences — what it **does**.
+3. What **need** it meets.
+4. **Whom** it is for.
+
+Collapse to one or two sentences for the minimal tier; the one-liner alone may
+suffice. (`references/vendor/diataxis-gen-readme/SKILL.md` lines 9-19.)
+
+### 3d. Pull optional sections
+
+For anything beyond the base skeleton — Performance, Security, Migration/Upgrade,
+Shell Completions, Comparison/Alternatives, and the rest — copy the matching
+skeleton from `references/section-library.md`. Include per the 3a tier and only
+when the scan supports the section; skip it otherwise rather than invent content.
+
+The project-structure / Architecture block is rendered from the scanner's
+`directory_structure`.
+
+<!-- TODO (see README.features.md): convert that tree -J JSON into ASCII art. -->
+
+### 3e. Table of contents (conditional)
+
+Add a TOC **only when the finished README exceeds ~100 lines** — below that it
+just pushes install below the fold. Keep it to at most two heading levels.
+
+GitHub's anchor autogeneration breaks on headings with badges or emoji. When that
+happens, put an explicit anchor on its own line before the heading and link to it:
+
+```markdown
+<a id="quick-start"></a>
+
+## Quick Start
+```
+
+(Threshold from `references/vendor/standard-readme/SKILL.md` lines 96-108; anchor
+technique from `references/vendor/make-readme/SKILL.md` lines 100-109.)
+
+### 3f. Progressive disclosure
+
+Keep the README focused on the 80% use case. Use `<details>` collapsibles for
+content that matters but breaks the happy path — raw benchmark tables, alternative
+install paths, exhaustive config references, contributor-only architecture notes.
+Never hide something a first-time user needs; if you are tempted to, restructure
+instead. Once a README grows past ~1000 lines, split detail out into `docs/`
+files and link to them under a Documentation section.
+(`references/vendor/write-readme/REFERENCE.md` lines 259-269;
+`references/vendor/crafting-readme-files/SKILL.md` lines 488-512.)
+
+### 3g. Companion files
+
+When the Contributing or Changelog sections warrant their own files, start from
+`templates/companion/CONTRIBUTING.md` and `templates/companion/CHANGELOG.md`
+(Keep-a-Changelog / SemVer). Fill and trim them the same way as the README.
+
+### Guardrails
+
+- **Consume the scaffolding.** Replace every `{{token}}` and delete every HTML
+  comment. No `{{...}}` may survive into the output — the audit step's
+  `rg -n "foo|bar|TODO|\{\{"` render-check treats any hit as not-done.
+- **Real values only.** Every code block must run as-is after copy-paste; use
+  values from the scan, never `foo`/`bar`/`example`/`test`.
+- **Empty fact, no section.** If a selected section has no supporting scan data,
+  omit it and note the assumption — do not fabricate to fill the skeleton.
+- **The skeleton is a starting point,** not a form to ship verbatim; adapt
+  ordering and wording to the actual project.
+
+## Step 4 — Badges
+
+Badges go in the slot directly under the title and one-liner. They are optional
+and easy to overdo: a badge earns its place only when it states a verifiable fact
+a reader would act on. Work through the gate, the set, the style, and the layout
+in order, then check the result against the anti-patterns.
+
+The reference tables for everything below — full URL/query syntax, the color and
+Simple-Icons slug catalogs, layout variants, and dynamic endpoints — live in the
+vendored `readme-badger` skill. Treat `references/vendor/readme-badger/SKILL.md`
+as the badge subsystem and load it when you need a lookup; this step is the
+decision procedure that drives it.
+
+### 4a. Gate: should this project have badges at all?
+
+Skip badges **entirely** unless the project publishes to a public registry (PyPI,
+npm, crates.io, Docker Hub, Go pkg) or is a public GitHub repo where CI/license
+badges resolve. Private apps, internal monorepos, and unpublished skill bundles
+get **no badges** — an unresolvable or perpetually-grey badge is worse than none.
+Use the scan's `git.owner`/`git.repo` (empty when there's no git remote) and the
+package name to decide; if the project isn't published, stop here.
+(`references/vendor/readme-creator/SKILL.md` lines 94-98;
+`references/vendor/readme/SKILL.md` lines 105-118.)
+
+### 4b. Cap the count
+
+Aim for **3-6 badges; hard cap at ~6.** Beyond that is noise, and duplicate facts
+(a "Built with Python" badge next to a PyPI-version badge) add none. Minimal-tier
+READMEs (Step 3a) should carry at most the essentials — build status and version.
+Order badges by importance: **build status → version → downloads → license**,
+with any identity/hero badge first.
+(`references/vendor/readme/SKILL.md` line 116;
+`references/vendor/readme-badger/SKILL.md` lines 330-332 for the overload rule.)
+
+### 4c. Pick the badge set by project type
+
+Use the ready-made per-type badge sets rather than assembling URLs by hand. Match
+the Step 2 project type / language to the closest set — Python library/CLI,
+JS/TS package, Rust crate, Claude Code plugin, or general open-source — and fill
+`{owner}`/`{repo}`/`{package}` from the scan.
+(Badge sets: `references/vendor/readme-badger/SKILL.md` lines 83-160. shields.io
+URL encoding — `_`→space, `__`→`_`, `--`→`-` — lines 16-54.)
+
+### 4d. Choose a style by placement
+
+One style **per row** (mixing styles gives uneven heights):
+
+- **`for-the-badge`** — hero / identity badge at the very top, and nowhere else.
+- **`flat`** (the default) or **`flat-square`** — the metadata row.
+- **`social`** — only GitHub star/fork/follower counts.
+- **`plastic`** — only to match an existing project convention; never introduce it.
+
+(`references/vendor/readme-badger/SKILL.md` lines 56-81.)
+
+### 4e. Choose a layout
+
+Pick the arrangement that fits the badge count and the README's tone:
+
+- **Inline after the title** — 2-4 `flat` badges, no HTML. Developer-facing.
+- **Centered single row** — 3-8 badges in `<p align="center">`. Polished.
+- **Two-tier (hero + metadata)** — `for-the-badge` identity row over a
+  `flat-square` metadata row. Strong-brand projects only.
+
+Rust convention uses reference-style link definitions; keep that idiom for crates.
+(Layouts: `references/vendor/readme-badger/SKILL.md` lines 162-221;
+more variants in `references/vendor/readme-badger/references/layout-patterns.md`.)
+
+### 4f. Static vs dynamic
+
+Prefer **dynamic** badges (shields.io fetches live data) for anything that
+changes — version, downloads, stars, CI status, coverage, last commit — so they
+never go stale. Reserve **static** `/badge/` badges for fixed labels (tech-stack
+tags, custom branding).
+(`references/vendor/readme-badger/SKILL.md` lines 300-324.)
+
+### Guardrails
+
+- **No badge without a gate.** If 4a says the project isn't published/public,
+  ship zero badges — do not fabricate registry or CI URLs for values that don't
+  exist yet.
+- **Every badge is linked and labelled.** Wrap each in a link to its data source
+  (`[![alt](img)](url)`) and give it descriptive alt text; an unlinked or
+  alt-less badge fails accessibility and gives readers nowhere to go.
+- **Verify slugs.** Non-obvious Simple-Icons slugs (`gnubash`, `vuedotjs`,
+  `nextdotjs`, `openjdk`, `nodedotjs`, `cplusplus`) and forbidden brands (AWS,
+  Azure, VS Code, OpenAI, …) — check the catalog before use; a wrong slug renders
+  a missing icon. (`references/vendor/readme-badger/SKILL.md` lines 233-267.)
+- **Drop no-information badges.** "Open Source", "Maintained", "Awesome" and the
+  like consume space without stating a verifiable fact — cut them.
+  (`references/vendor/readme-badger/SKILL.md` lines 328-353.)

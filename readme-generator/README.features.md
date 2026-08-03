@@ -1,14 +1,14 @@
 # README Generator/Updater — Feature Inventory
 
 Clustered feature analysis of the 34 vendored README-generator skills under
-`references/skills/`. Purpose: **design input for a single merged README
+`references/vendor/`. Purpose: **design input for a single merged README
 generator + updater skill.**
 
 ## How to read this doc
 
 - Features are grouped by **capability cluster**, not by source skill.
 - Each feature cites its supporting source as `skill-name/file (lines X-Y)`,
-  relative to `references/skills/`.
+  relative to `references/vendor/`.
 - Each cluster ends with a **> For the merged skill** note recommending what to
   adopt.
 - Skills that are not general README.md generators (WordPress `readme.txt`, the
@@ -176,6 +176,27 @@ Adapt which sections, tone, and badges appear based on project type.
 > For the merged skill: fold in `readme-badger` wholesale as the badge
 > subsystem (best-in-class), plus the conditional/capped rule from
 > `readme-creator`.
+
+> TODO — migrate badge generation to `pybadges`, replacing shields.io entirely.
+> `pybadges` (Google) generates static SVG files locally instead of hosted
+> shields.io URLs. This reworks the just-built Step 4 of `SKILL.md`, which is
+> currently shields.io-based; specifically:
+>
+> - **Add `pybadges` as a dependency** (`pip install pybadges`) and document it
+>   in `DEPENDENCIES.md`. Decide whether the skill shells out to the pybadges
+>   CLI (`python -m pybadges`) or imports it from an assembler script.
+> - **Generated SVGs must land somewhere** (e.g. `assets/badges/*.svg`, committed)
+>   and be referenced by relative path in the README, not by URL.
+> - **Dynamic badges no longer work.** shields.io's live endpoints (version,
+>   downloads, stars, CI status, coverage, last commit — Step 4f, `readme-badger`
+>   lines 300-324) have no `pybadges` equivalent; every badge becomes static and
+>   must be regenerated to update. Reconcile Step 4f and the type badge sets
+>   (Step 4c / `readme-badger` lines 83-160), most of which are dynamic endpoints.
+> - **Logo/style parity to confirm:** `pybadges` supports `--logo`, `--left/right-color`,
+>   `--whole-link`, embedded-logo data URIs, but has no `for-the-badge`/`social`/
+>   `plastic` style variants (Step 4d) — decide how to map or drop those.
+> - The vendored `readme-badger` corpus stays as design reference, but Step 4's
+>   procedure and citations need rewriting once the pybadges workflow is settled.
 
 ---
 
