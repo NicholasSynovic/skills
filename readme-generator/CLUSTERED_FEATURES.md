@@ -46,8 +46,8 @@ Automatically learn about the project instead of asking the user everything.
 - **Project-structure tree generation** (`tree -L 2`, generated dirs excluded; folders-first alphabetized)
     - `configure-readme/SKILL.md` (lines 137-139)
     - `readme-wizard/scripts/scan_project.sh` (lines 219-247)
-    - TODO: `scan_project.py` emits the structure as `tree -J` JSON. When
-      rendering a README, convert that JSON into ASCII-art tree format for the
+    - `scan_project.py` emits the structure as `tree -J` JSON; Step 5 of
+      `SKILL.md` renders that JSON into an ASCII-art tree for the
       project-structure section.
 - **Auto-detected project commands** (install/run/test/build per package manager)
     - `configure-readme/SKILL.md` (lines 126-136)
@@ -173,30 +173,24 @@ Adapt which sections, tone, and badges appear based on project type.
     - `github-readme/REFERENCE.md` (lines 7-116)
     - `readme-wizard/assets/badges.json`
 
-> For the merged skill: fold in `readme-badger` wholesale as the badge
-> subsystem (best-in-class), plus the conditional/capped rule from
-> `readme-creator`.
-
-> TODO — migrate badge generation to `pybadges`, replacing shields.io entirely.
-> `pybadges` (Google) generates static SVG files locally instead of hosted
-> shields.io URLs. This reworks the just-built Step 4 of `SKILL.md`, which is
-> currently shields.io-based; specifically:
+> For the merged skill: badge generation uses `pybadges` to render static local
+> SVGs (committed, referenced by relative path), replacing shields.io URLs
+> entirely. The `readme-badger` corpus is retained as the **design** reference
+> for badge content — which badges suit each type, colors, Simple-Icons slugs,
+> layout, anti-patterns — while its shields.io URL and dynamic-endpoint sections
+> no longer apply. The conditional/capped gate from `readme-creator` still holds.
+> Realized as Step 4 of `SKILL.md`; `pybadges` documented in `DEPENDENCIES.md`.
 >
-> - **Add `pybadges` as a dependency** (`pip install pybadges`) and document it
->   in `DEPENDENCIES.md`. Decide whether the skill shells out to the pybadges
->   CLI (`python -m pybadges`) or imports it from an assembler script.
-> - **Generated SVGs must land somewhere** (e.g. `assets/badges/*.svg`, committed)
->   and be referenced by relative path in the README, not by URL.
-> - **Dynamic badges no longer work.** shields.io's live endpoints (version,
->   downloads, stars, CI status, coverage, last commit — Step 4f, `readme-badger`
->   lines 300-324) have no `pybadges` equivalent; every badge becomes static and
->   must be regenerated to update. Reconcile Step 4f and the type badge sets
->   (Step 4c / `readme-badger` lines 83-160), most of which are dynamic endpoints.
-> - **Logo/style parity to confirm:** `pybadges` supports `--logo`, `--left/right-color`,
->   `--whole-link`, embedded-logo data URIs, but has no `for-the-badge`/`social`/
->   `plastic` style variants (Step 4d) — decide how to map or drop those.
-> - The vendored `readme-badger` corpus stays as design reference, but Step 4's
->   procedure and citations need rewriting once the pybadges workflow is settled.
+> Migration notes, now resolved:
+>
+> - Badges are static snapshots — dynamic values (version, downloads, stars, CI,
+>   coverage) are captured at generation time and must be regenerated on change;
+>   the updater (Step 6) is responsible for refreshing them.
+> - `pybadges` renders only one flat github-style badge — no `for-the-badge`/
+>   `flat-square`/`social`/`plastic` variants — so style selection is dropped.
+> - `pybadges` 3.0.1 imports the removed `imghdr` module and crashes on Python
+>   3.13+ without the `standard-imghdr` shim (or a 3.11/3.12 interpreter); see
+>   `DEPENDENCIES.md`.
 
 ---
 
@@ -218,9 +212,12 @@ Adapt which sections, tone, and badges appear based on project type.
 - **Contributor avatars (contrib.rocks) + star-history chart footer**
     - `readme-wizard/assets/readme-template.md` (lines 35-37, 52)
 
-> For the merged skill: support Mermaid + ASCII diagrams inline; offer optional
-> Playwright screenshot capture (gated on MCP availability). Treat Storybook
-> regeneration as an out-of-scope specialization.
+> For the merged skill: support Mermaid (default) + ASCII architecture diagrams
+> inline, both generated from the scanned structure; render the project-structure
+> file tree from the scanner's `directory_structure`; and offer an optional
+> star-history footer for public repos. **Out of scope:** Playwright/automated
+> screenshot capture, Storybook image regeneration, and contributor-avatar
+> (contrib.rocks) blocks. Realized as Step 5 of `SKILL.md`.
 
 ---
 

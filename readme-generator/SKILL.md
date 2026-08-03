@@ -2,7 +2,7 @@
   SKILL.md — work in progress, built section by section from README.features.md.
   Frontmatter (name / description / allowed-tools) is intentionally deferred.
   Sections present so far: 1 (scanning), 2 (type awareness & section selection),
-  3 (templates & section assembly), 4 (badges).
+  3 (templates & section assembly), 4 (badges), 5 (visuals & diagrams).
 -->
 
 ## Step 1 — Scan the project
@@ -252,10 +252,8 @@ Shell Completions, Comparison/Alternatives, and the rest — copy the matching
 skeleton from `references/section-library.md`. Include per the 3a tier and only
 when the scan supports the section; skip it otherwise rather than invent content.
 
-The project-structure / Architecture block is rendered from the scanner's
-`directory_structure`.
-
-<!-- TODO (see README.features.md): convert that tree -J JSON into ASCII art. -->
+The Project Structure and Architecture blocks are produced in Step 5 (file tree
+from the scanner's `directory_structure`; architecture diagram in Mermaid/ASCII).
 
 ### 3e. Table of contents (conditional)
 
@@ -307,89 +305,198 @@ When the Contributing or Changelog sections warrant their own files, start from
 
 Badges go in the slot directly under the title and one-liner. They are optional
 and easy to overdo: a badge earns its place only when it states a verifiable fact
-a reader would act on. Work through the gate, the set, the style, and the layout
+a reader would act on. Work through the gate, the set, the design, and the layout
 in order, then check the result against the anti-patterns.
 
-The reference tables for everything below — full URL/query syntax, the color and
-Simple-Icons slug catalogs, layout variants, and dynamic endpoints — live in the
-vendored `readme-badger` skill. Treat `references/vendor/readme-badger/SKILL.md`
-as the badge subsystem and load it when you need a lookup; this step is the
-decision procedure that drives it.
+**Badges are generated as static local SVG files with `pybadges`**, committed to
+the repo, and referenced by relative path — not hosted shields.io URLs. This keeps
+the README self-contained and free of third-party runtime fetches, at the cost of
+being a snapshot: a committed badge shows the value at generation time and must be
+regenerated to change. `pybadges` is a hard dependency (see `DEPENDENCIES.md`).
+
+The vendored `readme-badger` skill remains the **design** reference for badge
+_content_ — which badges suit each project type, the color system, Simple-Icons
+logo slugs, layout conventions, and anti-patterns. Its shields.io URL syntax and
+dynamic-endpoint sections no longer apply; use `pybadges` to render instead.
 
 ### 4a. Gate: should this project have badges at all?
 
 Skip badges **entirely** unless the project publishes to a public registry (PyPI,
-npm, crates.io, Docker Hub, Go pkg) or is a public GitHub repo where CI/license
-badges resolve. Private apps, internal monorepos, and unpublished skill bundles
-get **no badges** — an unresolvable or perpetually-grey badge is worse than none.
-Use the scan's `git.owner`/`git.repo` (empty when there's no git remote) and the
-package name to decide; if the project isn't published, stop here.
+npm, crates.io, Docker Hub, Go pkg) or is a public GitHub repo where a
+version/license/build fact is worth stating. Private apps, internal monorepos, and
+unpublished skill bundles get **no badges** — a badge that states nothing is worse
+than none. Use the scan's `git.owner`/`git.repo` (empty when there's no git
+remote) and the package name to decide; if there's no published fact, stop here.
 (`references/vendor/readme-creator/SKILL.md` lines 94-98;
 `references/vendor/readme/SKILL.md` lines 105-118.)
 
 ### 4b. Cap the count
 
 Aim for **3-6 badges; hard cap at ~6.** Beyond that is noise, and duplicate facts
-(a "Built with Python" badge next to a PyPI-version badge) add none. Minimal-tier
+(a "Built with Python" badge next to a version badge) add none. Minimal-tier
 READMEs (Step 3a) should carry at most the essentials — build status and version.
 Order badges by importance: **build status → version → downloads → license**,
 with any identity/hero badge first.
 (`references/vendor/readme/SKILL.md` line 116;
 `references/vendor/readme-badger/SKILL.md` lines 330-332 for the overload rule.)
 
-### 4c. Pick the badge set by project type
+### 4c. Pick the badge content by project type
 
-Use the ready-made per-type badge sets rather than assembling URLs by hand. Match
-the Step 2 project type / language to the closest set — Python library/CLI,
-JS/TS package, Rust crate, Claude Code plugin, or general open-source — and fill
-`{owner}`/`{repo}`/`{package}` from the scan.
-(Badge sets: `references/vendor/readme-badger/SKILL.md` lines 83-160. shields.io
-URL encoding — `_`→space, `__`→`_`, `--`→`-` — lines 16-54.)
+Decide _which_ badges to show from the Step 2 project type / language, using the
+per-type badge sets in `readme-badger` as the content guide — Python library/CLI,
+JS/TS package, Rust crate, Claude Code plugin, or general open-source. Take the
+left/right text and colors from those sets and from the scan (version from the
+manifest/latest tag, license from the license scan, package name), but render each
+one locally with `pybadges` (4d) rather than emitting a shields.io URL.
+(Badge content by type: `references/vendor/readme-badger/SKILL.md` lines 83-160;
+color reference lines 269-298; Simple-Icons slugs lines 233-267.)
 
-### 4d. Choose a style by placement
+### 4d. Generate each badge with `pybadges`
 
-One style **per row** (mixing styles gives uneven heights):
+Run the `pybadges` CLI once per badge, redirecting stdout to an SVG file under a
+committed assets directory (e.g. `assets/badges/`):
 
-- **`for-the-badge`** — hero / identity badge at the very top, and nowhere else.
-- **`flat`** (the default) or **`flat-square`** — the metadata row.
-- **`social`** — only GitHub star/fork/follower counts.
-- **`plastic`** — only to match an existing project convention; never introduce it.
+```bash
+python3 -m pybadges \
+  --left-text=license --right-text=MIT \
+  --right-color='#4c1' \
+  --whole-link='https://github.com/OWNER/REPO/blob/main/LICENSE' \
+  > assets/badges/license.svg
+```
 
-(`references/vendor/readme-badger/SKILL.md` lines 56-81.)
+Key flags (`python3 -m pybadges --help` for the full list):
 
-### 4e. Choose a layout
+- `--left-text` / `--right-text` — the label and value.
+- `--left-color` / `--right-color` — backgrounds (default left `#555`, right
+  `#007ec6`); use the `readme-badger` color reference for semantic colors.
+- `--whole-link` (or `--left-link` / `--right-link`, which are mutually exclusive
+  with `--whole-link`) — the click target.
+- `--logo` — a URI or file path to a Simple-Icons SVG; add `--embed-logo` to
+  inline the icon as a data-URI so the badge stays self-contained offline.
+- `--left-title` / `--right-title` — accessibility titles on the SVG parts.
 
-Pick the arrangement that fits the badge count and the README's tone:
+`pybadges` renders one flat github-style badge; it has **no** `for-the-badge` /
+`flat-square` / `social` / `plastic` style variants, so treat "flat" as the only
+style and drop any style-selection guidance from `readme-badger`.
 
-- **Inline after the title** — 2-4 `flat` badges, no HTML. Developer-facing.
+### 4e. Reference and lay out the generated SVGs
+
+Reference each committed SVG by **relative path**, wrapped in a Markdown image and
+a link to its data source:
+
+```markdown
+[![License](./assets/badges/license.svg)](./LICENSE)
+```
+
+Arrange them to fit the badge count and tone (layout conventions still apply):
+
+- **Inline after the title** — 2-4 badges, no HTML. Developer-facing.
 - **Centered single row** — 3-8 badges in `<p align="center">`. Polished.
-- **Two-tier (hero + metadata)** — `for-the-badge` identity row over a
-  `flat-square` metadata row. Strong-brand projects only.
 
-Rust convention uses reference-style link definitions; keep that idiom for crates.
-(Layouts: `references/vendor/readme-badger/SKILL.md` lines 162-221;
-more variants in `references/vendor/readme-badger/references/layout-patterns.md`.)
-
-### 4f. Static vs dynamic
-
-Prefer **dynamic** badges (shields.io fetches live data) for anything that
-changes — version, downloads, stars, CI status, coverage, last commit — so they
-never go stale. Reserve **static** `/badge/` badges for fixed labels (tech-stack
-tags, custom branding).
-(`references/vendor/readme-badger/SKILL.md` lines 300-324.)
+(Layout conventions: `references/vendor/readme-badger/SKILL.md` lines 162-221.)
 
 ### Guardrails
 
-- **No badge without a gate.** If 4a says the project isn't published/public,
-  ship zero badges — do not fabricate registry or CI URLs for values that don't
-  exist yet.
+- **No badge without a gate.** If 4a says there's no published fact, ship zero
+  badges — do not generate a badge for a version, registry, or CI status that
+  does not exist.
+- **Real values only.** Fill `--left-text`/`--right-text` from the scan (manifest
+  version, detected license, package name); never invent a version or a passing
+  build status.
+- **Commit the SVGs and link by relative path.** The generated files must live in
+  the repo (e.g. `assets/badges/`) and be referenced relatively; a badge pointing
+  at a missing file renders broken.
 - **Every badge is linked and labelled.** Wrap each in a link to its data source
-  (`[![alt](img)](url)`) and give it descriptive alt text; an unlinked or
-  alt-less badge fails accessibility and gives readers nowhere to go.
-- **Verify slugs.** Non-obvious Simple-Icons slugs (`gnubash`, `vuedotjs`,
+  (`[![alt](svg)](url)`) with descriptive alt text and, where useful, a
+  `--*-title`; an unlinked or alt-less badge fails accessibility.
+- **Verify logo slugs.** Non-obvious Simple-Icons slugs (`gnubash`, `vuedotjs`,
   `nextdotjs`, `openjdk`, `nodedotjs`, `cplusplus`) and forbidden brands (AWS,
-  Azure, VS Code, OpenAI, …) — check the catalog before use; a wrong slug renders
-  a missing icon. (`references/vendor/readme-badger/SKILL.md` lines 233-267.)
+  Azure, VS Code, OpenAI, …) render a missing icon if wrong — check the catalog.
+  (`references/vendor/readme-badger/SKILL.md` lines 233-267.)
 - **Drop no-information badges.** "Open Source", "Maintained", "Awesome" and the
   like consume space without stating a verifiable fact — cut them.
   (`references/vendor/readme-badger/SKILL.md` lines 328-353.)
+- **Regenerate on change.** Static SVGs are snapshots; when a version or license
+  changes, re-run `pybadges` — the update path (Step 6) must refresh them.
+
+## Step 5 — Visuals & diagrams
+
+A good diagram earns a reader's understanding faster than a paragraph — but a bad
+or unnecessary one is clutter. This step produces two kinds of visual from the
+scan: an **architecture diagram** (how the components relate) and the
+**project-structure file tree** (what's on disk). It also adds an optional
+star-history footer. Everything here is generated from scanned facts; never draw a
+component that isn't in the project.
+
+### 5a. Decide whether a diagram is warranted
+
+Add an architecture diagram **only** when the project has multiple components or a
+clear data flow. Skip it entirely for simple projects — a single library, a small
+CLI, or a docs-only repo. Prefer a diagram over a screenshot when it conveys the
+same structure with less maintenance.
+(`references/vendor/readme-wizard/assets/diagrams.md` line 3;
+`references/vendor/crafting-readme-files/SKILL.md` lines 253-278.)
+
+### 5b. Architecture diagram — Mermaid (default)
+
+Mermaid is the default: it renders natively on GitHub and stays diffable as text.
+Build it from the **actual** scanned structure — `directory_structure`, detected
+components, and monorepo packages — not a stock template. Use the archetype that
+matches the Step 2 project type as a starting point, then adapt node names and
+edges to the real project:
+
+- **application / framework** → `graph LR` client → API → data/cache/queue.
+- **monorepo** → `graph TD` root → packages, with inter-package edges.
+- **cli** → `graph LR` input → parser → command handler → output/filesystem.
+- **collection (plugins)** → `graph TD` core → plugins → shared API.
+- **pipeline / content** → `graph LR` source → transform → output → deploy.
+
+Adapt, don't paste — a diagram that names generic boxes tells the reader nothing.
+(Archetypes: `references/vendor/readme-wizard/assets/diagrams.md`, with the
+"adapt, don't use as-is" rule at line 62; Mermaid-in-Architecture examples at
+`references/vendor/configure-readme/REFERENCE.md` lines 374-385 and
+`references/vendor/create-github-readme/prompt.md` lines 72-84.)
+
+### 5c. Architecture diagram — ASCII (fallback)
+
+When Mermaid won't render — plain-text READMEs, PyPI/RST output, terminal viewers
+— or when a lighter touch fits, draw the same architecture as a box-and-arrow
+ASCII diagram in a fenced block (layers stacked top-to-bottom, arrows for flow).
+It conveys the same structure and never depends on a renderer.
+(`references/vendor/crafting-readme-files/SKILL.md` lines 253-278.)
+
+### 5d. Project-structure file tree
+
+For the Project Structure section, render the scanner's `directory_structure`
+(nested `tree -J` JSON, two levels deep, directories first) into an ASCII tree
+inside a fenced code block. This is a **file tree** — distinct from the
+architecture diagram in 5b/5c, which shows components and data flow, not files.
+Include it when the layout is not obvious from the intro; skip it for
+single-file projects.
+
+### 5e. Star-history footer (optional)
+
+For a public GitHub repo, you may close the README with a star-history chart.
+Gate it on the scan: include only when `git.owner` and `git.repo` are both present
+(empty means no remote — omit the footer). Fill owner/repo from the scan:
+
+```markdown
+[![Star History Chart](https://api.star-history.com/svg?repos=OWNER/REPO&type=Date)](https://star-history.com/#OWNER/REPO&Date)
+```
+
+Note this is a **hosted external image** (star-history.com renders it live), the
+same category of dependency the badge migration is moving away from — include it
+only if the project wants that trade-off.
+(`references/vendor/readme-wizard/assets/readme-template.md` line 52.)
+
+### Guardrails
+
+- **Diagrams reflect real structure.** Every node and edge must correspond to a
+  scanned component, package, or data flow — never invent boxes to fill a diagram.
+- **Gate on complexity and facts.** No architecture diagram for simple projects
+  (5a); no star-history footer without `git.owner`/`git.repo` (5e).
+- **Out of scope — do not add:** Playwright/automated screenshot capture,
+  Storybook image regeneration, and contributor-avatar blocks (contrib.rocks).
+  These are deliberately excluded from this skill.
+- **Fenced blocks render as-is.** Mermaid must be valid Mermaid; ASCII trees and
+  diagrams go in plain fenced blocks so they survive every renderer.
