@@ -395,6 +395,37 @@ def detect_git(root: Path) -> dict[str, str]:
     return info
 
 
+def detect_latest_tag(root: Path) -> str:
+    """Return the latest git tag reachable from HEAD, or "" if none/unavailable.
+
+    Uses local ``git describe --tags --abbrev=0`` only; makes no network calls
+    and degrades gracefully (empty string) when git or a tag is absent.
+    """
+    if not (root / ".git").exists():
+        try:
+            inside = subprocess.run(
+                ["git", "-C", str(root), "rev-parse", "--is-inside-work-tree"],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+            if inside.returncode != 0:
+                return ""
+        except (OSError, subprocess.SubprocessError):
+            return ""
+
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(root), "describe", "--tags", "--abbrev=0"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return out.stdout.strip() if out.returncode == 0 else ""
+
+
 def check_tree() -> str | None:
     """Return an error message if ``tree`` is missing or older than the minimum.
 
@@ -641,7 +672,7 @@ def collect(root: Path) -> dict[str, Any]:
         "root": str(root),
         "project_name": metadata["name"],
         "description": metadata["description"],
-        "version": metadata["version"],
+        "version": detect_latest_tag(root) or metadata["version"],
         "license": detect_license(root),
         "git": detect_git(root),
         "package_manager": detect_package_manager(root),
