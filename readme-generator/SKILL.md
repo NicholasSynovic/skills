@@ -1,8 +1,25 @@
+---
+name: readme-generator
+description: >-
+    Generate a high-quality README.md for a software project by scanning the
+    codebase for facts (manifests, license, git remote, package manager,
+    directory tree), classifying the project into one of seven types
+    (CLI/tool, library/SDK, application, framework, monorepo, collection,
+    personal), and filling a type-specific, depth-tiered template with real
+    scanned values — plus static badges and architecture/file-tree diagrams.
+    Use this whenever the user asks to write, create, generate, draft, or
+    scaffold a README or README.md; wants project documentation for a repo,
+    package, CLI, library, or monorepo; or asks "document this project" — even
+    if they don't say the word "README" explicitly. Anti-fabrication is a hard
+    rule: it reads code before asking and omits any section the scan cannot
+    support.
+---
+
 <!--
-  SKILL.md — work in progress, built section by section from README.features.md.
-  Frontmatter (name / description / allowed-tools) is intentionally deferred.
-  Sections present so far: 1 (scanning), 2 (type awareness & section selection),
+  Built section by section from the CLUSTERED_FEATURES.md inventory.
+  Sections present: 1 (scanning), 2 (type awareness & section selection),
   3 (templates & section assembly), 4 (badges), 5 (visuals & diagrams).
+  Scope is generation only — audit/update modes are not implemented here.
 -->
 
 ## Step 1 — Scan the project
@@ -35,7 +52,7 @@ The output is the source of truth for mechanical facts. Fields:
 | `deploy_files`                                | Dockerfile / compose / vercel / etc.                                                                      | Deployment section                              |
 | `ci`                                          | Provider + workflow filenames                                                                             | CI badge, workflow filename                     |
 | `sibling_docs`                                | ARCHITECTURE / AGENTS / CLAUDE / CONTRIBUTING / CHANGELOG / etc.                                          | Read these instead of re-deriving               |
-| `existing_readmes`                            | Path, line count, headings of any current README                                                          | Update / audit modes                            |
+| `existing_readmes`                            | Path, line count, headings of any current README                                                          | Detect & avoid clobbering an existing README    |
 | `directory_structure`                         | 2-level, folder-first tree as nested JSON (from `tree -J`, generated dirs and `.gitignore`d paths pruned) | Project-structure section (render to ASCII art) |
 
 Do not re-derive by hand anything the scanner already reports.
@@ -176,8 +193,9 @@ The type also sets tone. Lead the intro in the matching voice:
 - **Never:** hedge language, marketing fluff, passive voice in problem
   statements, emojis in prose.
 - **Default professional.** First person is opt-in — natural for `personal`,
-  otherwise only when the user asks. The full humanize / lint pass is a later
-  step; this is just the tone to write in.
+  otherwise only when the user asks. This sets the tone to write in; after
+  drafting, read the prose back and cut hedges, buzzwords, and passive voice by
+  hand.
 
 (Voice matrix from
 `references/vendor/github-readme/SKILL.md` (lines 227-238).)
@@ -417,7 +435,7 @@ Arrange them to fit the badge count and tone (layout conventions still apply):
   like consume space without stating a verifiable fact — cut them.
   (`references/vendor/readme-badger/SKILL.md` lines 328-353.)
 - **Regenerate on change.** Static SVGs are snapshots; when a version or license
-  changes, re-run `pybadges` — the update path (Step 6) must refresh them.
+  changes, re-run `pybadges` to refresh the committed files.
 
 ## Step 5 — Visuals & diagrams
 
