@@ -1,5 +1,5 @@
 ---
-name: review-abilites
+name: review-abilities
 description: >-
     Review a project, directory, subdirectory, collection of files, or a single
     file to surface potential issues across eight cross-cutting qualities —
@@ -33,27 +33,7 @@ findings is a valid and good result.
 
 Each finding you record belongs to exactly one of these. One-line summaries
 below; **read `references/rubric.md` for the full definition of each ability and
-its severity anchors before writing findings** — the anchors are what keep
-severities consistent from run to run.
-
-1. **Accessibility** — code _approachability_: how easily someone can discover,
-   set up, run, and start contributing to this code. (This is NOT UI/WCAG
-   accessibility.)
-2. **Documentation** — whether the code, its usage, and its intent are
-   adequately explained for its audience.
-3. **Maintainability** — how safely and cheaply the code can be changed:
-   complexity, coupling, duplication, tests, structure.
-4. **Interpretability** — how readable the code is on its face: naming, clarity,
-   local reasoning, absence of surprise.
-5. **Interoperability** — how well it works with other tools, formats,
-   platforms, and standards.
-6. **Reusability** — how easily parts can be lifted and used elsewhere: clean
-   boundaries, minimal hidden dependencies, generality where appropriate.
-7. **Sustainability** — how well it holds up over time: dependency health,
-   deprecations, pinned/abandoned tech, licensing, ongoing cost.
-8. **Cohesion** — how well the reviewed code fits the rest of the project:
-   consistent conventions, no drift, sensible placement, no redundant
-   reimplementations.
+its severity anchors before writing findings**.
 
 ## Severity scale
 
@@ -91,7 +71,7 @@ before defaulting to the middle.
 
 3. **Write / update `TODO.ability.md`** at the **root of the reviewed target**
    (the project/directory top; for a single file, the directory containing it),
-   using the format below.
+   or in the current working directory using the format below.
 
 ## Output: TODO.ability.md
 

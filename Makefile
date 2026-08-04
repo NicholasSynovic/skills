@@ -1,6 +1,9 @@
-.PHONY: build
+.PHONY: build clean
 
 build:
 	mkdir -p build
-	zip -r build/readme-generator.skill readme-generator
-	zip -r build/review-abilities.skill review-abilities
+	zip -r -u build/readme-generator.skill readme-generator
+	zip -r -u build/review-abilities.skill review-abilities
+
+clean:
+	rm -rf build
