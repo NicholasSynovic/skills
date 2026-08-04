@@ -69,14 +69,17 @@ Non-obvious gotchas baked into the hooks:
 `make build` zips each first-party skill into `build/<skill>.skill` (gitignored):
 
 ```bash
-make build      # -> build/readme-generator.skill, build/review-abilities.skill
-make clean      # rm -rf build
+make build              # -> build/readme-generator.skill, build/review-abilities.skill
+make build REF=<ref>    # package a specific branch/sha instead of HEAD
+make clean              # rm -rf build
 ```
 
-Gotcha: `build` uses `zip -r -u` (update), which _appends_ to any existing
-archive, so deleted/renamed files can persist and `.gitignore` is NOT honored
-(the 1.3 MB `references/vendor/**` gets packaged in). Run `make clean` first for
-a fresh, correct bundle.
+`build` uses `git archive`, so it packages only **git-tracked** files: the
+gitignored vendored corpus (`readme-generator/references/vendor/**`) and any
+`__pycache__`/`.DS_Store` cruft are excluded automatically, and each run writes a
+fresh archive (no stale/appended entries). Gotcha: `git archive` packages the
+committed tree at `REF` (default `HEAD`), **not** the working tree — uncommitted
+changes are not bundled, so commit first or pass `REF=<branch-or-sha>`.
 
 ## scan_project.py
 
