@@ -57,8 +57,9 @@ Non-obvious gotchas baked into the hooks:
   `--tab-width 4 --print-width 80 --trailing-comma es5`, LF.
 - `.editorconfig` sets `insert_final_newline = false`, but the pre-commit
   `end-of-file-fixer` hook enforces a trailing newline — the hook wins on commit.
-- pre-commit pins `python3.14`; local env is 3.13. `scan_project.py` requires
-  **Python ≥ 3.11** (stdlib `tomllib`).
+- pre-commit pins `python3.14` (local `python3` is 3.14.x). `scan_project.py`
+  requires **Python ≥ 3.11** (stdlib `tomllib`) and runs fine on 3.14, but the
+  Step 4 `pybadges` badge step does NOT — see below.
 
 ## scan_project.py
 
