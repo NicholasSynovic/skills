@@ -4,42 +4,45 @@
 
 A workspace holding **first-party OpenCode/Claude skills under construction** plus
 a **vendored corpus** of third-party README-generator skills used as design input.
-There is no application, server, or package build.
+There is no application, server, or runtime — only skills that get packaged into
+`.skill` zips.
 
 - `readme-generator/` — the main first-party skill, built section by section from
   `readme-generator/CLUSTERED_FEATURES.md` (a capability-cluster feature inventory
   of the vendored skills). See `readme-generator/SKILL.md`.
-- `review-abilites/` — a second first-party skill (code-quality review →
+- `review-abilities/` — a second first-party skill (code-quality review →
   `TODO.ability.md`). Independent of `readme-generator/`.
 - `readme-generator/references/vendor/<skill>/` — 34 vendored third-party skills
-  (design references, not part of the shipped skill).
+  (design references, not part of the shipped skill; gitignored, see below).
 - **`FutureReadmeSkills.md` (repo root) is a STALE duplicate** of
   `CLUSTERED_FEATURES.md` — same doc, older badge cluster with unresolved pybadges
   TODOs. `CLUSTERED_FEATURES.md` is the current inventory; edit that one, not the
   root copy.
+- `README.md` at the repo root is empty; there is no human-facing map yet.
 
 ## First-party vs vendored (do not confuse them)
 
 - **Edit freely:** `readme-generator/SKILL.md`, `scripts/`, `templates/`,
   `references/*.md` (e.g. `section-library.md`), `DEPENDENCIES.md`,
-  `CLUSTERED_FEATURES.md`; all of `review-abilites/`.
+  `CLUSTERED_FEATURES.md`; all of `review-abilities/`.
 - **Do NOT hand-edit** `readme-generator/references/vendor/**` — vendored upstream
-  content, validated against `computedHash` in the `skills` lockfile. Editing
-  diverges it from its hash. Add/update via the `skills` CLI
-  (`npx skills add <repo> --skill <name>`), not by copying files.
+  content. Add/update via the `skills` CLI (`npx skills add <repo> --skill <name>`),
+  not by copying files. The full add list is in `readme-generator/references.txt`.
 - The `SKILL.md` / `AGENTS.md` / `README.md` files _inside_ `references/vendor/**`
   belong to vendored skills, not this repo.
 - Cite vendored sources as `references/vendor/<skill>/file (lines X-Y)`. The path
   is `references/vendor/`, **not** `references/skills/` (a stale path that keeps
   reappearing — grep for it before committing).
-- `readme-generator/references.txt` lists 49 `npx skills add` commands but only 34
-  resolved; trust the lockfile + `references/vendor/` as the installed set, not
-  `references.txt`. No `skills-lock.json` is checked in at the moment.
+- **The vendored corpus is gitignored** (`readme-generator/.gitignore` ignores
+  `references/vendor`), so it is NOT on a fresh clone and no `skills-lock.json` is
+  committed. Every `references/vendor/...` citation is unverifiable until the
+  corpus is restored via the `references.txt` commands. `references.txt` lists 49
+  `npx skills add` commands but only 34 resolved.
 
 ## Toolchain — pre-commit is the source of truth
 
-There is no Makefile/pyproject. All lint/format/checks run via
-`.pre-commit-config.yaml`. Run before committing:
+Lint/format/checks run via `.pre-commit-config.yaml` (there is no test suite and
+no CI enforcing it — you must run it locally). Run before committing:
 
 ```bash
 pre-commit run --all-files      # or: pre-commit run --files <path>
@@ -60,6 +63,20 @@ Non-obvious gotchas baked into the hooks:
 - pre-commit pins `python3.14` (local `python3` is 3.14.x). `scan_project.py`
   requires **Python ≥ 3.11** (stdlib `tomllib`) and runs fine on 3.14, but the
   Step 4 `pybadges` badge step does NOT — see below.
+
+## Building / packaging the skills
+
+`make build` zips each first-party skill into `build/<skill>.skill` (gitignored):
+
+```bash
+make build      # -> build/readme-generator.skill, build/review-abilities.skill
+make clean      # rm -rf build
+```
+
+Gotcha: `build` uses `zip -r -u` (update), which _appends_ to any existing
+archive, so deleted/renamed files can persist and `.gitignore` is NOT honored
+(the 1.3 MB `references/vendor/**` gets packaged in). Run `make clean` first for
+a fresh, correct bundle.
 
 ## scan_project.py
 
@@ -89,3 +106,11 @@ Non-obvious gotchas baked into the hooks:
   Keep these consistent when editing one of them.
 - Anti-fabrication is a hard rule throughout: never invent examples/values; omit a
   section when scan data is absent.
+
+## Code-quality review notes
+
+There are two `TODO.ability.md` files (repo-root and `readme-generator/`), both
+produced by the `review-abilities` skill. The root one reviews first-party
+repo-level concerns; the `readme-generator/` one covers that skill's internals.
+When re-running a review, update the existing file in place (preserve `- [x]`
+state, append to the `## Review log`) rather than clobbering it.
