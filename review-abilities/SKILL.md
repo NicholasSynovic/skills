@@ -14,6 +14,15 @@ description: >-
     output file explicitly.
 ---
 
+<!--
+  Status: implemented — reviews a target across eight abilities and writes
+  TODO.ability.md. Files: SKILL.md (procedure + output format) and
+  references/rubric.md (canonical ability definitions + severity anchors,
+  versioned). Intentionally script-free with no external dependencies, so the
+  minimal footprint versus the sibling readme-generator skill is a decision,
+  not an omission.
+-->
+
 # Review Abilities
 
 ## Why this matters
@@ -35,20 +44,29 @@ Each finding you record belongs to exactly one of these. One-line summaries
 below; **read `references/rubric.md` for the full definition of each ability and
 its severity anchors before writing findings**.
 
+- **Accessibility** — how easily a non-author can discover, set up, run, and
+  start contributing to the code.
+- **Documentation** — whether the code, its usage, and its intent are adequately
+  explained for the intended audience.
+- **Maintainability** — how safely and cheaply the code can be changed over time.
+- **Interpretability** — how readable the code is on its face, without running it
+  or hunting elsewhere.
+- **Interoperability** — how well it works with other tools, systems, formats,
+  platforms, and standards.
+- **Reusability** — how easily parts can be lifted and reused elsewhere.
+- **Sustainability** — how well it holds up over time; its ongoing health and
+  cost of ownership.
+- **Cohesion** — how well the reviewed code fits the rest of the project.
+
 ## Severity scale
 
 Severity describes **how bad a finding is**, not how good the code is. Every
-finding gets a whole number 1–5:
+finding gets a whole number 1–5, from **5 — Critical** (blocks use or actively
+breaks things) down to **1 — Nag** (cosmetic or nice-to-have).
 
-- **5 — Critical**: blocks use or actively breaks things (won't run, unusable by
-  intended audience, broken dependency, license conflict).
-- **4 — Major**: serious friction or risk; will bite soon or hurt many people.
-- **3 — Moderate**: real problem worth scheduling, not urgent.
-- **2 — Minor**: small improvement; noticeable but low impact.
-- **1 — Nag**: cosmetic or nice-to-have.
-
-If unsure between two levels, consult the per-ability anchors in the rubric
-before defaulting to the middle.
+**`references/rubric.md` is the canonical source for the severity scale and its
+per-ability anchors** — read it before scoring findings, and edit it (not this
+file) when the definitions change.
 
 ## Procedure
 
@@ -70,12 +88,15 @@ before defaulting to the middle.
    matters_, and a _concrete suggested fix_.
 
 3. **Write / update `TODO.ability.md`** at the **root of the reviewed target**
-   (the project/directory top; for a single file, the directory containing it),
-   or in the current working directory using the format below.
+   (the project/directory top; for a single file, the directory containing it);
+   if that location is not writable, fall back to the current working directory.
+   Use the format below, and obtain the `Last reviewed` value from the real
+   current system date/time (e.g. run `date`) rather than estimating it.
 
 ## Output: TODO.ability.md
 
-Write to the root of the reviewed target. Use this structure exactly.
+Write to the root of the reviewed target (fall back to the current working
+directory if it is not writable). Use this structure exactly.
 
 ```markdown
 # TODO.ability — Code Quality Review
@@ -129,6 +150,11 @@ If the file already exists, **update rather than clobber**:
    visible.
 4. Refresh the summary table and merge in new findings in the right sections.
 5. Append a short **timestamped review log** entry at the bottom under a
-   `## Review log` heading, e.g. `- 2026-08-03 14:22 — re-reviewed src/; 2 new,
-1 resolved.` This keeps a lightweight record of each run without bloating the
-   findings.
+   `## Review log` heading, including the rubric version you scored against (see
+   the version stamp at the top of `references/rubric.md`), e.g.:
+
+    ```markdown
+    - 2026-08-03 14:22 — re-reviewed src/ (rubric v1); 2 new, 1 resolved.
+    ```
+
+    This keeps a lightweight record of each run without bloating the findings.

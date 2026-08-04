@@ -1,5 +1,10 @@
 # Ability Rubric
 
+**Rubric version: 1 (2026-08-04).** Bump this version and date whenever the
+severity anchors or ability definitions below change, and record the version in
+each review-log entry so a re-run can tell whether prior findings were scored
+under different anchors.
+
 Full definitions and severity anchors for the eight abilities. Read this before
 writing findings so severities stay consistent across runs and across projects.
 
