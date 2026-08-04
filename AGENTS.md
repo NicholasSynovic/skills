@@ -6,19 +6,23 @@ A workspace holding **first-party OpenCode/Claude skills under construction** pl
 a **vendored corpus** of third-party README-generator skills used as design input.
 There is no application, server, or package build.
 
-- `readme-generator/` — the main first-party skill being built section by section
-  from `README.features.md` (a 12-cluster feature inventory of the vendored
-  skills). See `readme-generator/SKILL.md`.
+- `readme-generator/` — the main first-party skill, built section by section from
+  `readme-generator/CLUSTERED_FEATURES.md` (a capability-cluster feature inventory
+  of the vendored skills). See `readme-generator/SKILL.md`.
 - `review-abilites/` — a second first-party skill (code-quality review →
   `TODO.ability.md`). Independent of `readme-generator/`.
 - `readme-generator/references/vendor/<skill>/` — 34 vendored third-party skills
   (design references, not part of the shipped skill).
+- **`FutureReadmeSkills.md` (repo root) is a STALE duplicate** of
+  `CLUSTERED_FEATURES.md` — same doc, older badge cluster with unresolved pybadges
+  TODOs. `CLUSTERED_FEATURES.md` is the current inventory; edit that one, not the
+  root copy.
 
 ## First-party vs vendored (do not confuse them)
 
 - **Edit freely:** `readme-generator/SKILL.md`, `scripts/`, `templates/`,
   `references/*.md` (e.g. `section-library.md`), `DEPENDENCIES.md`,
-  `README.features.md`; all of `review-abilites/`.
+  `CLUSTERED_FEATURES.md`; all of `review-abilites/`.
 - **Do NOT hand-edit** `readme-generator/references/vendor/**` — vendored upstream
   content, validated against `computedHash` in the `skills` lockfile. Editing
   diverges it from its hash. Add/update via the `skills` CLI
@@ -28,9 +32,9 @@ There is no application, server, or package build.
 - Cite vendored sources as `references/vendor/<skill>/file (lines X-Y)`. The path
   is `references/vendor/`, **not** `references/skills/` (a stale path that keeps
   reappearing — grep for it before committing).
-- `references.txt` lists 49 `npx skills add` commands but only 34 resolved; trust
-  the lockfile + `references/vendor/` as the installed set, not `references.txt`.
-  No `skills-lock.json` is checked in at the moment.
+- `readme-generator/references.txt` lists 49 `npx skills add` commands but only 34
+  resolved; trust the lockfile + `references/vendor/` as the installed set, not
+  `references.txt`. No `skills-lock.json` is checked in at the moment.
 
 ## Toolchain — pre-commit is the source of truth
 
@@ -65,14 +69,22 @@ Non-obvious gotchas baked into the hooks:
   `git` is optional (degrades gracefully).
 - Verify edits with `python3 -m py_compile readme-generator/scripts/scan_project.py`
   and a real run; there is no test suite.
+- Badge generation (SKILL.md Step 4) uses `pybadges` ≥ 3.0.1 (static local SVGs,
+  not shields.io URLs). On **Python 3.13+** `pybadges` crashes on any invocation
+  because it imports the removed stdlib `imghdr` — install `standard-imghdr` or
+  run it under Python 3.11/3.12.
 
 ## Building the README skill
 
-- `README.features.md` is the section-by-section build plan; `SKILL.md`'s header
-  comment tracks which sections (steps) are done. Sections 1–3 exist.
+- `CLUSTERED_FEATURES.md` is the section-by-section build source; `SKILL.md`'s
+  header comment tracks which sections (steps) are done. Sections 1–5 exist (scanning,
+  type awareness, templates, badges, visuals). **Scope is generation only** —
+  the audit/update mode (a "Step 6 updater" referenced in `CLUSTERED_FEATURES.md`)
+  is not implemented in `SKILL.md`.
 - Content model: **Step 1** scans (facts via script + agent judgement), **Step 2**
   classifies project type (7 types) and selects sections via a matrix, **Step 3**
   fills per-type skeletons in `templates/` (literal `{{token}}` fill-ins) filtered
-  by depth tier. Keep these consistent when editing one of them.
+  by depth tier. `templates/companion/` holds CHANGELOG/CONTRIBUTING skeletons.
+  Keep these consistent when editing one of them.
 - Anti-fabrication is a hard rule throughout: never invent examples/values; omit a
   section when scan data is absent.
