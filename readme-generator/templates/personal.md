@@ -22,6 +22,8 @@
 
 # {{name}}
 
+<!-- No badges for personal: no registry presence (Step 2b). Omission is deliberate — do not add a badge slot here. -->
+
 {{one-liner — first person is fine; say what it is and why it exists to you.}}
 
 ## Install

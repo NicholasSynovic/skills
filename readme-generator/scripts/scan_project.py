@@ -13,12 +13,13 @@ Requirements (see DEPENDENCIES.md):
 - Python >= 3.11 (uses the stdlib ``tomllib``)
 - ``tree`` >= 2.3.2 (hard requirement; used for the directory structure via
   ``tree -J``).
-- ``scc`` >= 3.7.0 (hard requirement; used for code-line counting via
-  ``scc --by-file -f json``).
 - ``licensee`` >= 10.0.0 (hard requirement; used for license detection via
-  ``licensee detect --json``).
-If a required tool is missing or too old the scanner emits a JSON error object
-and exits non-zero.
+  ``licensee detect --json``, with a manifest SPDX fallback).
+- ``scc`` >= 3.7.0 (optional; used solely to line-count pre-existing READMEs via
+  ``scc --by-file -f json``). When absent, that count degrades to 0 and the scan
+  still runs.
+If a *hard* required tool is missing or too old the scanner emits a JSON error
+object and exits non-zero.
 
 Design goals:
 - never crash on a malformed/partial project; degrade to empty fields
@@ -139,7 +140,6 @@ MONOREPO_MIN_PACKAGES = 3
 MAX_DEPTH = 3
 TREE_DEPTH = 2
 MIN_TREE_VERSION = (2, 3, 2)
-MIN_SCC_VERSION = (3, 7, 0)
 MIN_LICENSEE_VERSION = (10, 0, 0)
 
 
@@ -290,11 +290,56 @@ def extract_metadata(root: Path) -> dict[str, str]:
     return {"name": name, "description": description, "version": version}
 
 
-def detect_license(root: Path) -> str:
-    """Return the SPDX license id from ``licensee detect --json``.
+def license_from_manifest(root: Path) -> str:
+    """Return an SPDX license id declared in a package manifest, or "".
 
-    Reads the first entry of the reported ``licenses`` list. Returns "" if
-    detection fails, no license is found, or the top result is ``NOASSERTION``.
+    Fallback for when ``licensee`` yields nothing. Reads the standard SPDX
+    ``license`` field from ``package.json`` (npm), ``Cargo.toml`` (``[package]``),
+    and ``pyproject.toml`` (PEP 621 ``[project].license``, either a bare SPDX
+    expression string or the legacy ``{text = "..."}`` table). Returns "" when no
+    manifest carries a usable value.
+    """
+    pkg = root / "package.json"
+    if pkg.exists():
+        value = load_json(pkg).get("license")
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+
+    cargo = root / "Cargo.toml"
+    if cargo.exists():
+        data = load_toml(cargo)
+        section = (
+            data.get("package", {}) if isinstance(data.get("package"), dict) else {}
+        )
+        value = section.get("license")
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+
+    pyproject = root / "pyproject.toml"
+    if pyproject.exists():
+        data = load_toml(pyproject)
+        project = (
+            data.get("project", {}) if isinstance(data.get("project"), dict) else {}
+        )
+        value = project.get("license")
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+        if isinstance(value, dict):
+            text = value.get("text")
+            if isinstance(text, str) and text.strip():
+                return text.strip()
+
+    return ""
+
+
+def detect_license(root: Path) -> str:
+    """Return the SPDX license id, from ``licensee`` or a manifest fallback.
+
+    First reads the first entry of the ``licenses`` list reported by
+    ``licensee detect --json``. When that is unavailable (detection fails, no
+    license found, or the top result is ``NOASSERTION``), falls back to the SPDX
+    ``license`` field of a package manifest (see ``license_from_manifest``).
+    Returns "" only when neither source yields a value.
     """
     try:
         out = subprocess.run(
@@ -304,24 +349,24 @@ def detect_license(root: Path) -> str:
             timeout=30,
         )
     except (OSError, subprocess.SubprocessError):
-        return ""
+        return license_from_manifest(root)
 
     try:
         data = json.loads(out.stdout)
     except json.JSONDecodeError:
-        return ""
+        return license_from_manifest(root)
 
     licenses = data.get("licenses") if isinstance(data, dict) else None
     if not isinstance(licenses, list) or not licenses:
-        return ""
+        return license_from_manifest(root)
 
     first = licenses[0]
     if not isinstance(first, dict):
-        return ""
+        return license_from_manifest(root)
 
     spdx = first.get("spdx_id")
     if not isinstance(spdx, str) or spdx == "NOASSERTION":
-        return ""
+        return license_from_manifest(root)
     return spdx
 
 
@@ -348,12 +393,12 @@ def detect_package_manager(root: Path) -> str:
 
 
 def detect_git(root: Path) -> dict[str, str]:
-    """Return git owner/repo/default_branch parsed from the origin remote.
+    """Return git owner/repo parsed from the origin remote.
 
     Uses local ``git`` only; makes no network calls. Handles both SSH
     (``git@host:owner/repo.git``) and HTTPS remote URL forms.
     """
-    info = {"owner": "", "repo": "", "default_branch": ""}
+    info = {"owner": "", "repo": ""}
     if not (root / ".git").exists():
         try:
             inside = subprocess.run(
@@ -393,9 +438,6 @@ def detect_git(root: Path) -> dict[str, str]:
             info["owner"] = parts[-2]
             info["repo"] = parts[-1]
 
-    branch = git("symbolic-ref", "--short", "HEAD")
-    if branch:
-        info["default_branch"] = branch
     return info
 
 
@@ -430,103 +472,76 @@ def detect_latest_tag(root: Path) -> str:
     return out.stdout.strip() if out.returncode == 0 else ""
 
 
+def parse_version(
+    text: str, pattern: str = r"(\d+)\.(\d+)\.(\d+)"
+) -> tuple[int, ...] | None:
+    """Parse the first ``X.Y.Z`` triple matching ``pattern`` into an int tuple.
+
+    Pure and I/O-free so the comparison logic is testable without shelling out.
+    ``pattern`` must expose three numeric capture groups. Returns None when no
+    match is found.
+    """
+    match = re.search(pattern, text)
+    if not match:
+        return None
+    return tuple(int(part) for part in match.groups())
+
+
+def at_least(version: tuple[int, ...], minimum: tuple[int, ...]) -> bool:
+    """Return True when ``version`` is greater than or equal to ``minimum``."""
+    return version >= minimum
+
+
+def check_tool(
+    name: str,
+    version_args: list[str],
+    version_pattern: str,
+    min_version: tuple[int, ...],
+) -> str | None:
+    """Return an error message if ``name`` is missing or older than ``min_version``.
+
+    Shells out to ``name`` with ``version_args`` and parses its output with
+    ``version_pattern`` (see ``parse_version``). Returns None when a suitable
+    version is available. Every error string points to DEPENDENCIES.md.
+    """
+    min_str = ".".join(map(str, min_version))
+    try:
+        out = subprocess.run(
+            [name, *version_args],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except FileNotFoundError:
+        return (
+            f"'{name}' is required but was not found on PATH. "
+            f"Install {name} >= {min_str} (see DEPENDENCIES.md)."
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        return f"failed to run '{name} {' '.join(version_args)}': {exc}"
+
+    version = parse_version(out.stdout, version_pattern)
+    if version is None:
+        return f"could not parse {name} version from: {out.stdout.strip()!r}"
+
+    if not at_least(version, min_version):
+        return (
+            f"{name} {'.'.join(map(str, version))} is too old; "
+            f"require >= {min_str} (see DEPENDENCIES.md)."
+        )
+    return None
+
+
 def check_tree() -> str | None:
-    """Return an error message if ``tree`` is missing or older than the minimum.
-
-    Returns None when a suitable ``tree`` (>= MIN_TREE_VERSION) is available.
-    """
-    try:
-        out = subprocess.run(
-            ["tree", "--version"],
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-    except FileNotFoundError:
-        return (
-            "'tree' is required but was not found on PATH. "
-            f"Install tree >= {'.'.join(map(str, MIN_TREE_VERSION))} (see DEPENDENCIES.md)."
-        )
-    except (OSError, subprocess.SubprocessError) as exc:
-        return f"failed to run 'tree --version': {exc}"
-
-    match = re.search(r"v(\d+)\.(\d+)\.(\d+)", out.stdout)
-    if not match:
-        return f"could not parse tree version from: {out.stdout.strip()!r}"
-
-    version = tuple(int(part) for part in match.groups())
-    if version < MIN_TREE_VERSION:
-        return (
-            f"tree {'.'.join(map(str, version))} is too old; "
-            f"require >= {'.'.join(map(str, MIN_TREE_VERSION))} (see DEPENDENCIES.md)."
-        )
-    return None
-
-
-def check_scc() -> str | None:
-    """Return an error message if ``scc`` is missing or older than the minimum.
-
-    Returns None when a suitable ``scc`` (>= MIN_SCC_VERSION) is available.
-    """
-    try:
-        out = subprocess.run(
-            ["scc", "--version"],
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-    except FileNotFoundError:
-        return (
-            "'scc' is required but was not found on PATH. "
-            f"Install scc >= {'.'.join(map(str, MIN_SCC_VERSION))} (see DEPENDENCIES.md)."
-        )
-    except (OSError, subprocess.SubprocessError) as exc:
-        return f"failed to run 'scc --version': {exc}"
-
-    match = re.search(r"version\s+(\d+)\.(\d+)\.(\d+)", out.stdout)
-    if not match:
-        return f"could not parse scc version from: {out.stdout.strip()!r}"
-
-    version = tuple(int(part) for part in match.groups())
-    if version < MIN_SCC_VERSION:
-        return (
-            f"scc {'.'.join(map(str, version))} is too old; "
-            f"require >= {'.'.join(map(str, MIN_SCC_VERSION))} (see DEPENDENCIES.md)."
-        )
-    return None
+    """Return an error message if ``tree`` is missing or too old, else None."""
+    return check_tool("tree", ["--version"], r"v(\d+)\.(\d+)\.(\d+)", MIN_TREE_VERSION)
 
 
 def check_licensee() -> str | None:
-    """Return an error message if ``licensee`` is missing or older than the minimum.
-
-    Returns None when a suitable ``licensee`` (>= MIN_LICENSEE_VERSION) is available.
-    """
-    try:
-        out = subprocess.run(
-            ["licensee", "version"],
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-    except FileNotFoundError:
-        return (
-            "'licensee' is required but was not found on PATH. "
-            f"Install licensee >= {'.'.join(map(str, MIN_LICENSEE_VERSION))} (see DEPENDENCIES.md)."
-        )
-    except (OSError, subprocess.SubprocessError) as exc:
-        return f"failed to run 'licensee version': {exc}"
-
-    match = re.search(r"(\d+)\.(\d+)\.(\d+)", out.stdout)
-    if not match:
-        return f"could not parse licensee version from: {out.stdout.strip()!r}"
-
-    version = tuple(int(part) for part in match.groups())
-    if version < MIN_LICENSEE_VERSION:
-        return (
-            f"licensee {'.'.join(map(str, version))} is too old; "
-            f"require >= {'.'.join(map(str, MIN_LICENSEE_VERSION))} (see DEPENDENCIES.md)."
-        )
-    return None
+    """Return an error message if ``licensee`` is missing or too old, else None."""
+    return check_tool(
+        "licensee", ["version"], r"(\d+)\.(\d+)\.(\d+)", MIN_LICENSEE_VERSION
+    )
 
 
 def build_tree(root: Path) -> Any:
@@ -588,11 +603,13 @@ def heading_summary(readme: Path) -> list[str]:
     return headings
 
 
-def line_count(path: Path) -> int:
+def scc_code_lines(path: Path) -> int:
     """Return the code-line count (scc "Code", excludes blank/comment lines).
 
-    Uses ``scc --by-file -f json``. Returns 0 on any failure, including files
-    that scc skips (e.g. ``.gitignore``d paths).
+    Shells out to ``scc --by-file -f json``. ``scc`` is optional: this returns 0
+    on any failure — including when ``scc`` is not installed and files that scc
+    skips (e.g. ``.gitignore``d paths). A 0 therefore means "unavailable/skipped",
+    not necessarily "empty file".
     """
     try:
         out = subprocess.run(
@@ -694,7 +711,9 @@ def collect(root: Path) -> dict[str, Any]:
         "existing_readmes": [
             {
                 "path": item,
-                "line_count": line_count(root / item),
+                # 0 when scc is absent or the README is gitignored (both legitimate),
+                # not only when the file is empty. See scc_code_lines / DEPENDENCIES.md.
+                "line_count": scc_code_lines(root / item),
                 "headings": heading_summary(root / item),
             }
             for item in existing_readmes
@@ -715,7 +734,7 @@ def main() -> int:
     if not root.exists() or not root.is_dir():
         parser.error(f"path does not exist or is not a directory: {root}")
 
-    dependency_error = check_tree() or check_scc() or check_licensee()
+    dependency_error = check_tree() or check_licensee()
     if dependency_error is not None:
         print(
             json.dumps(

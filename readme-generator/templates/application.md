@@ -21,6 +21,8 @@
 
 # {{name}}
 
+<!-- No badges for application: not published to a registry (Step 2b). Omission is deliberate — do not add a badge slot here. -->
+
 {{one-liner describing what the app does and who it is for}}
 
 ## Features

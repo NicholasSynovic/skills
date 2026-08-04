@@ -20,9 +20,16 @@
 <h3 align="center">{{name}}</h3>
 <p align="center">{{one-liner}}</p>
 
+<!--
+  Badges: generated in Step 4 as static local SVGs with `pybadges` and referenced
+  by relative path — never shields.io URLs. Gate on Step 4a (drop this block
+  entirely if the project publishes no registry/version/license fact), cap at 3-6,
+  and commit the SVGs under assets/badges/.
+-->
+
 <p align="center">
-  <a href="https://www.npmjs.com/package/{{name}}"><img alt="version" src="https://img.shields.io/npm/v/{{name}}.svg"></a>
-  <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-{{license}}-blue.svg"></a>
+  <a href="{{version-source-url}}"><img alt="version {{version}}" src="./assets/badges/version.svg"></a>
+  <a href="LICENSE"><img alt="license {{license}}" src="./assets/badges/license.svg"></a>
 </p>
 
 ## Highlights

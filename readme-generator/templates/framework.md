@@ -22,8 +22,15 @@
 
 # {{name}}
 
-[![version](https://img.shields.io/npm/v/{{name}}.svg)](https://www.npmjs.com/package/{{name}})
-[![license](https://img.shields.io/badge/license-{{license}}-blue.svg)](LICENSE)
+<!--
+  Badges: generated in Step 4 as static local SVGs with `pybadges` and referenced
+  by relative path — never shields.io URLs. Gate on Step 4a (drop these lines
+  entirely if the project publishes no registry/version/license fact), cap at 3-6,
+  and commit the SVGs under assets/badges/.
+-->
+
+[![version {{version}}](./assets/badges/version.svg)]({{version-source-url}})
+[![license {{license}}](./assets/badges/license.svg)](LICENSE)
 
 {{one-liner explaining the core value proposition}}
 

@@ -23,6 +23,8 @@
 
 # {{name}}
 
+<!-- No badges for monorepo: no registry presence (Step 2b). Omission is deliberate — do not add a badge slot here. -->
+
 {{one-liner}}
 
 ## Getting Started

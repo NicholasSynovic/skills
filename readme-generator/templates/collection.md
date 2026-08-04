@@ -23,6 +23,14 @@
 
 # {{name}}
 
+<!--
+  Badges for collection are conditional (Step 2b): include them only if the
+  collection itself is published to a registry. If it is, add the Step 4 slot here
+  — static local SVGs from `pybadges`, referenced by relative path, e.g.
+  [![license {{license}}](./assets/badges/license.svg)](LICENSE) — never
+  shields.io URLs. If it is not published, ship no badges.
+-->
+
 {{one-liner — lead with the count or scope, e.g. "NN reusable X".}}
 
 ## Install

@@ -37,23 +37,27 @@ deterministic — no network calls — and never crashes on a partial project.
 python3 scripts/scan_project.py <project-dir>
 ```
 
+Prerequisites: see `DEPENDENCIES.md` (`tree`, `scc`, `licensee`, Python ≥ 3.11). A
+missing/old tool makes the scanner emit `{"error": ...}` (which points to
+`DEPENDENCIES.md`) and exit 1.
+
 The output is the source of truth for mechanical facts. Fields:
 
-| Field                                         | Meaning                                                                                                   | Feeds                                           |
-| --------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `project_name`, `description`, `version`      | From the primary manifest (`package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`)                      | Title, intro, version badge                     |
-| `license`                                     | Detected from `LICENSE*` text or manifest                                                                 | License section + badge                         |
-| `git.owner`, `git.repo`, `git.default_branch` | Parsed from `origin` remote (SSH + HTTPS)                                                                 | Badge URLs, clone command, links                |
-| `package_manager`                             | Lockfile precedence, then `packageManager` field                                                          | Install/run commands                            |
-| `manifests`, `package_scripts`                | All manifests + npm scripts                                                                               | Install / build / test / run commands           |
-| `is_monorepo`, `packages`                     | True when ≥3 sub-manifests; the package dirs                                                              | Component table, per-package scoping            |
-| `task_files`                                  | Makefile / Taskfile / justfile                                                                            | Task/command discovery                          |
-| `config_examples`                             | `.env.example` etc.                                                                                       | Environment-variable section                    |
-| `deploy_files`                                | Dockerfile / compose / vercel / etc.                                                                      | Deployment section                              |
-| `ci`                                          | Provider + workflow filenames                                                                             | CI badge, workflow filename                     |
-| `sibling_docs`                                | ARCHITECTURE / AGENTS / CLAUDE / CONTRIBUTING / CHANGELOG / etc.                                          | Read these instead of re-deriving               |
-| `existing_readmes`                            | Path, line count, headings of any current README                                                          | Detect & avoid clobbering an existing README    |
-| `directory_structure`                         | 2-level, folder-first tree as nested JSON (from `tree -J`, generated dirs and `.gitignore`d paths pruned) | Project-structure section (render to ASCII art) |
+| Field                                    | Meaning                                                                                                   | Feeds                                           |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `project_name`, `description`, `version` | From the primary manifest (`package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`)                      | Title, intro, version badge                     |
+| `license`                                | Detected from `LICENSE*` text (`licensee`), falling back to the manifest SPDX `license` field             | License section + badge                         |
+| `git.owner`, `git.repo`                  | Parsed from `origin` remote (SSH + HTTPS)                                                                 | Badge URLs, clone command, links                |
+| `package_manager`                        | Lockfile precedence, then `packageManager` field                                                          | Install/run commands                            |
+| `manifests`, `package_scripts`           | All manifests + npm scripts                                                                               | Install / build / test / run commands           |
+| `is_monorepo`, `packages`                | True when ≥3 sub-manifests; the package dirs                                                              | Component table, per-package scoping            |
+| `task_files`                             | Makefile / Taskfile / justfile                                                                            | Task/command discovery                          |
+| `config_examples`                        | `.env.example` etc.                                                                                       | Environment-variable section                    |
+| `deploy_files`                           | Dockerfile / compose / vercel / etc.                                                                      | Deployment section                              |
+| `ci`                                     | Provider + workflow filenames                                                                             | CI badge, workflow filename                     |
+| `sibling_docs`                           | ARCHITECTURE / AGENTS / CLAUDE / CONTRIBUTING / CHANGELOG / etc.                                          | Read these instead of re-deriving               |
+| `existing_readmes`                       | Path, line count, headings of any current README                                                          | Detect & avoid clobbering an existing README    |
+| `directory_structure`                    | 2-level, folder-first tree as nested JSON (from `tree -J`, generated dirs and `.gitignore`d paths pruned) | Project-structure section (render to ASCII art) |
 
 Do not re-derive by hand anything the scanner already reports.
 
@@ -330,7 +334,9 @@ in order, then check the result against the anti-patterns.
 the repo, and referenced by relative path — not hosted shields.io URLs. This keeps
 the README self-contained and free of third-party runtime fetches, at the cost of
 being a snapshot: a committed badge shows the value at generation time and must be
-regenerated to change. `pybadges` is a hard dependency (see `DEPENDENCIES.md`).
+regenerated to change. `pybadges` is a hard dependency (see `DEPENDENCIES.md`);
+install it from the maintained fork, which supports Python 3.9–3.14:
+`pip install git+https://github.com/NicholasSynovic/pybadges`.
 
 The vendored `readme-badger` skill remains the **design** reference for badge
 _content_ — which badges suit each project type, the color system, Simple-Icons
