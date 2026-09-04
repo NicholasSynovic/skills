@@ -1,120 +1,111 @@
 ---
 name: readme-creator
-description: "Create a README.md file for the project"
+description: "Create, rewrite, or improve a project's README.md by analyzing the repository itself — its manifests, build config, CI workflows, docs, and source. Use this whenever the user asks for a README, project overview, or repository documentation, wants to polish or expand an existing README, or is setting up a new project that lacks one — even if they never say the word 'README'."
 ---
 
-## Role
+# README Creator
 
-You're a senior expert software engineer with extensive experience in open
-source projects. You always make sure the `README.md` files you write are appealing,
-informative, and easy to read.
+Write a README that lets a newcomer understand what the project is, why it
+exists, and how to run it — based only on evidence found in the repository.
+A README documenting commands that don't work or features that don't exist is
+worse than a shorter, truthful one, so everything you write must trace back to
+something you actually saw in the repo.
 
-## Task
+## Exemplars
 
-1. Take a deep breath, and review the entire project and workspace, then create
-   a comprehensive and well-structured `README.md` file for the project.
-2. Take inspiration from these `README.md` files for the structure, tone and content:
-    - [`assets/README_0.md`](assets/README_0.md)
-    - [`assets/README_1.md`](assets/README_1.md)
-    - [`assets/README_2.md`](assets/README_2.md)
-    - [`assets/README_3.md`](assets/README_3.md)
-3. Do not overuse emojis, and keep the readme concise and to the point.
-4. Do not include sections like "LICENSE", "CONTRIBUTING", "CHANGELOG", etc.
-   There are dedicated files for those sections.
-5. Use [GFM (GitHub Flavored Markdown)](https://raw.githubusercontent.com/github/cmark-gfm/refs/heads/master/test/spec.txt)
-   for formatting, and [GitHub admonition
-   syntax](https://github.com/orgs/community/discussions/16925) where appropriate.
-6. If you find a logo or icon for the project, use it in the `README.md`'s header.
+Before writing, skim these four READMEs; they demonstrate the target style:
+a centered header with logo and badge row, a one-line pitch, a nav line of
+anchor links, GitHub admonitions, and fenced command blocks.
 
----
+- `assets/README_0.md` — large application sample
+- `assets/README_1.md` — multi-sample collection (uses `<details>` sections)
+- `assets/README_2.md` — small CLI tool
+- `assets/README_3.md` — compact, prose-first README
 
-name: readme-blueprint-generator
-description: 'Intelligent README.md generation prompt that analyzes project documentation structure and creates comprehensive repository documentation. Scans .github/copilot directory files and copilot-instructions.md to extract project information, technology stack, architecture, development workflow, coding standards, and testing approaches while generating well-structured markdown documentation with proper formatting, cross-references, and developer-focused content.'
+Emulate their _style_, never their _content_. In particular, do not copy the
+Contributing/CLA and Trademarks boilerplate that some of them contain — it is
+specific to those projects, and this skill excludes those sections anyway.
 
----
+## Step 1: Discover the project
 
-# README Generator Prompt
+Read the repository before writing anything. Good sources, in rough priority:
 
-Generate a comprehensive README.md for this repository by analyzing the documentation files in the .github/copilot directory and the copilot-instructions.md file. Follow these steps:
+1. **Manifests and lockfiles** — `package.json`, `pyproject.toml`,
+   `Cargo.toml`, `go.mod`, etc. These give the name, description, tech stack,
+   version constraints, and defined scripts.
+2. **Build, test, lint, and CI config** — Makefiles, task runners, `.github`
+   workflow files. These reveal the install/build/test commands that actually
+   work, rather than the ones you'd guess.
+3. **Existing docs and source** — any current `README.md`, `docs/`,
+   `CHANGELOG.md`, `LICENSE`, and the code entry points showing how the
+   project is really used.
+4. **Instruction files, if present** — `AGENTS.md`, `CLAUDE.md`,
+   `.github/copilot-instructions.md`, `CONTRIBUTING.md`. These may capture
+   conventions worth reflecting, but they are optional inputs: most repos
+   don't have them, and their absence changes nothing.
 
-1. Scan all the files in the .github/copilot folder, like:
-    - Architecture
-    - Code_Exemplars
-    - Coding_Standards
-    - Project_Folder_Structure
-    - Technology_Stack
-    - Unit_Tests
-    - Workflow_Analysis
+Check that each file exists before reading it, and work from what is actually
+there — not from what a typical project of this kind would contain.
 
-2. Also review the copilot-instructions.md file in the .github folder
+## Step 2: Choose the structure
 
-3. Create a README.md with the following sections:
+Start from the skeleton below, then adapt it to the project type: a library
+leads with installation, an application leads with getting started and
+running, a sample collection leads with a samples table. Omit any section
+with no truthful content — an empty section is worse than a missing one.
 
-## Project Name and Description
+Recommended flow:
 
-- Extract the project name and primary purpose from the documentation
-- Include a concise description of what the project does
+1. Title, plus the project's logo/icon if the repo has one
+2. Badge row (see the rules below)
+3. One-line pitch — what this is, and for whom
+4. Overview — what it does and why it exists
+5. Features — the few that distinguish it
+6. Getting started — prerequisites, installation, first run
+7. Usage — main commands or API, with runnable examples
+8. Project structure — only if the layout is non-obvious
+9. Resources — related documentation and links
+10. Troubleshooting — only if real guidance exists
 
-## Technology Stack
+## Step 3: Write
 
-- List the primary technologies, languages, and frameworks used
-- Include version information when available
-- Source this information primarily from the Technology_Stack file
+- Use GitHub Flavored Markdown, with GitHub admonition syntax where it adds
+  value: `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`.
+  Reference: https://github.com/orgs/community/discussions/16925
+- Put every command in a fenced code block.
+- Use a centered header block like the exemplars: `<!-- prettier-ignore -->`,
+  `<div align="center">`, logo, title, badge row, nav links.
+- Keep emojis rare, if used at all — a few in feature bullets is the most the
+  exemplars use.
 
-## Project Architecture
+## Rules
 
-- Provide a high-level overview of the architecture
-- Consider including a simple diagram if described in the documentation
-- Source from the Architecture file
+**Link out, don't inline.** Never duplicate the content of `LICENSE`,
+`CONTRIBUTING`, `CHANGELOG`, or `CODE_OF_CONDUCT` files in the README. These
+files already exist for that purpose, and a second copy drifts out of date.
+A one-line link is the right amount of README coverage for them.
 
-## Getting Started
+**Be concise.** Readers skim. Every section should survive the question
+"what does a newcomer need here?" — if the answer is "details live in
+`docs/x.md`", write one sentence and link.
 
-- Include installation instructions based on the technology stack
-- Add setup and configuration steps
-- Include any prerequisites
+**Never fabricate.** This is the hard rule, because a confident README full
+of invented facts actively misleads users:
 
-## Project Structure
+- Only add badges for facts you verified: CI status if workflow files exist,
+  license from the `LICENSE` file, language/runtime versions from manifests.
+  If there is no CI, there is no build badge.
+- Only include links that resolve within the repo; for external links, only
+  ones found in repo files.
+- Only document commands the repo's configs or docs actually define.
+- When information is missing, omit the section rather than filling it with
+  plausible-sounding content.
 
-- Brief overview of the folder organization
-- Source from Project_Folder_Structure file
+## Self-check
 
-## Key Features
+Before finishing, verify:
 
-- List main functionality and features of the project
-- Extract from various documentation files
-
-## Development Workflow
-
-- Summarize the development process
-- Include information about branching strategy if available
-- Source from Workflow_Analysis file
-
-## Coding Standards
-
-- Summarize key coding standards and conventions
-- Source from the Coding_Standards file
-
-## Testing
-
-- Explain testing approach and tools
-- Source from Unit_Tests file
-
-## Contributing
-
-- Guidelines for contributing to the project
-- Reference any code exemplars for guidance
-- Source from Code_Exemplars and copilot-instructions
-
-## License
-
-- Include license information if available
-
-Format the README with proper Markdown, including:
-
-- Clear headings and subheadings
-- Code blocks where appropriate
-- Lists for better readability
-- Links to other documentation files
-- Badges for build status, version, etc. if information is available
-
-Keep the README concise yet informative, focusing on what new developers or users would need to know about the project.
+- Every command in the README matches something defined in the repo.
+- Every badge and link is backed by repo evidence.
+- No LICENSE/CONTRIBUTING/CHANGELOG content is inlined.
+- The structure fits the project type, and no section is empty filler.
