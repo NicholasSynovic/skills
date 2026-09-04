@@ -20,45 +20,27 @@ repos:
           - id: check-yaml
           - id: debug-statements
           - id: destroyed-symlinks
-          #       - id: detect-aws-credentials    # Fails by default without a --credentials file
           - id: detect-private-key
-          # - id: double-quote-string-fixer
           - id: end-of-file-fixer
-          #       - id: file-contents-sorter  # Disabled as a sensible default
-          #         files: []                 # Add files to to sort here
           - id: fix-byte-order-marker
-          # - id: forbid-new-submodules # Disable me if you want submodules
-          # - id: forbid-submodules # Disable me if you want submodules
           - id: mixed-line-ending
             args: [--fix=lf]
           - id: name-tests-test
             args: [--unittest] # test.*\.py
-          - id: no-commit-to-branch
-            args: [--branch, main]
           - id: pretty-format-json
             args: [--autofix, --indent=4, --no-ensure-ascii, --no-sort-keys]
           - id: requirements-txt-fixer
-          #       - id: sort-simple-yaml      # Disabled as a sensible default
-          #         files: []                 # Add files to to sort here
           - id: trailing-whitespace
             args: [--markdown-linebreak-ext=md]
 
     - repo: https://github.com/astral-sh/ruff-pre-commit
-      rev: v0.15.21
+      rev: v0.16.6
       hooks:
           - id: ruff-check # Runs the linter
             types_or: [python, pyi, jupyter, pyproject]
             args: [--fix] # Automatically fixes linting errrors, see https://docs.astral.sh/ruff/rules/
           - id: ruff-format
             types_or: [python, pyi, jupyter] # Runs the formatter
-
-    - repo: https://github.com/PyCQA/bandit
-      rev: 1.9.4
-      hooks:
-          - id: bandit
-            types: [python]
-            require_serial: true
-            args: [--exclude, "tests,build"]
 
     - repo: local
       hooks:

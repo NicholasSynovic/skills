@@ -14,15 +14,6 @@ description: >-
     output file explicitly.
 ---
 
-<!--
-  Status: implemented — reviews a target across eight abilities and writes
-  TODO.ability.md. Files: SKILL.md (procedure + output format) and
-  references/rubric.md (canonical ability definitions + severity anchors,
-  versioned). Intentionally script-free with no external dependencies, so the
-  minimal footprint versus the sibling readme-generator skill is a decision,
-  not an omission.
--->
-
 # Review Abilities
 
 ## Why this matters
