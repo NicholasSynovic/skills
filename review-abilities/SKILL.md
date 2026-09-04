@@ -1,17 +1,11 @@
 ---
 name: review-abilities
-description: >-
-    Review a project, directory, subdirectory, collection of files, or a single
-    file to surface potential issues across eight cross-cutting qualities —
-    accessibility (code approachability), documentation, maintainability,
-    interpretability, interoperability, reusability, sustainability, and cohesion
-    with other project components. Each finding is ranked 1 (nag) to 5 (critical)
-    and written to a TODO.ability.md. Use this whenever the user asks to review,
-    audit, assess, or critique code quality; asks "what's wrong with" or "how do I
-    improve" a codebase; wants a TODO/action list for a project; or mentions any of
-    maintainability, reusability, sustainability, documentation quality,
-    interoperability, or code cohesion — even if they don't name this skill or the
-    output file explicitly.
+description: "Review a project, directory, subdirectory, collection of files, or a single file to surface potential issues across eight cross-cutting qualities — accessibility, documentation, maintainability, interpretability, interoperability, reusability, sustainability, and cohesion. Each finding is ranked 1 (nag) to 5 (critical) and written to a TODO.ability.md. Use this whenever the user asks to review, audit, assess, or critique code quality; asks 'what's wrong with' or 'how do I improve' a codebase; wants a TODO/action list for a project; or mentions any of maintainability, reusability, sustainability, documentation quality, interoperability, or code cohesion — even if they don't name this skill or the output file explicitly."
+license: AGPL-3.0
+compatibility: For OpenCode and Claude Code.
+metadata:
+    version: "0.1.0"
+    author: Nicholas M. Synovic
 ---
 
 # Review Abilities
@@ -32,8 +26,7 @@ findings is a valid and good result.
 ## The eight abilities
 
 Each finding you record belongs to exactly one of these. One-line summaries
-below; **read `references/rubric.md` for the full definition of each ability and
-its severity anchors before writing findings**.
+below — these are the working definitions to score against.
 
 - **Accessibility** — how easily a non-author can discover, set up, run, and
   start contributing to the code.
@@ -55,10 +48,6 @@ Severity describes **how bad a finding is**, not how good the code is. Every
 finding gets a whole number 1–5, from **5 — Critical** (blocks use or actively
 breaks things) down to **1 — Nag** (cosmetic or nice-to-have).
 
-**`references/rubric.md` is the canonical source for the severity scale and its
-per-ability anchors** — read it before scoring findings, and edit it (not this
-file) when the definitions change.
-
 ## Procedure
 
 1. **Establish scope.** Identify exactly what you were asked to review — whole
@@ -74,9 +63,9 @@ file) when the definitions change.
 
 2. **Evaluate each ability deliberately.** Go through all eight — don't stop at
    the obvious two or three. For each, decide whether there are genuine issues,
-   and for each issue capture: a short title, the ability, a severity (with the
-   rubric anchors in mind), a `path:line` reference where applicable, _why it
-   matters_, and a _concrete suggested fix_.
+   and for each issue capture: a short title, the ability, a severity, a
+   `path:line` reference where applicable, _why it matters_, and a _concrete
+   suggested fix_.
 
 3. **Write / update `TODO.ability.md`** at the **root of the reviewed target**
    (the project/directory top; for a single file, the directory containing it);
@@ -141,11 +130,10 @@ If the file already exists, **update rather than clobber**:
    visible.
 4. Refresh the summary table and merge in new findings in the right sections.
 5. Append a short **timestamped review log** entry at the bottom under a
-   `## Review log` heading, including the rubric version you scored against (see
-   the version stamp at the top of `references/rubric.md`), e.g.:
+   `## Review log` heading, e.g.:
 
     ```markdown
-    - 2026-08-03 14:22 — re-reviewed src/ (rubric v1); 2 new, 1 resolved.
+    - 2026-08-03 14:22 — re-reviewed src/; 2 new, 1 resolved.
     ```
 
     This keeps a lightweight record of each run without bloating the findings.
