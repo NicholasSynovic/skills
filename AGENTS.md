@@ -12,15 +12,22 @@ the installed skill.
 ## Build and verify
 
 - Python tooling is uv-managed: `uv sync` (requires-python >=3.12, pinned to
-  3.14 in `.python-version`). The only dependency is `skills-ref`.
+  3.14 in `.python-version`). Dependencies: `skills-ref` (skill validation)
+  and `pybadges` (README license badges).
+- `pybadges` is pinned to a git fork (NicholasSynovic/pybadges, via
+  `tool.uv.sources`) because upstream imports the removed `imghdr` stdlib
+  module and crashes on Python >=3.13 — the fork uses `filetype` instead.
+  Don't swap it for the PyPI release. Run its CLI as `uv run pybadges` (it
+  lives in `.venv/bin`, not on PATH).
 - `make check` runs `skills-ref validate` on each skill. It calls the bare
   `skills-ref` binary, which must be on PATH (e.g. `uv tool install
 skills-ref`) — a project-venv install is not enough.
 - `make build` zips each skill into `build/<skill>.skill`. It uses `git archive`
   with `REF ?= HEAD`, so **uncommitted working-tree changes are NOT packaged** —
   commit first, or override with `make build REF=<branch-or-sha>`.
-- The only verification is pre-commit (set up with `make create-dev`; pins
-  Python 3.14). Run `pre-commit run --all-files` before committing.
+- One-shot setup: `make create-dev` (pre-commit install + autoupdate +
+  `uv sync`). The only verification is pre-commit — run
+  `pre-commit run --all-files` before committing.
 
 ## Formatting (pre-commit enforces on commit)
 
