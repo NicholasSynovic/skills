@@ -1,6 +1,11 @@
 ---
 name: readme-creator
 description: "Create, rewrite, or improve a project's README.md by analyzing the repository itself — its manifests, build config, CI workflows, docs, and source. Use this whenever the user asks for a README, project overview, or repository documentation, wants to polish or expand an existing README, or is setting up a new project that lacks one — even if they never say the word 'README'."
+license: AGPL-3.0
+compatibility: For OpenCode and Claude Code. The license badge step requires uv (to fetch pybadges from a git source).
+metadata:
+    version: "0.1.0"
+    author: Nicholas M. Synovic
 ---
 
 # README Creator
@@ -10,6 +15,17 @@ exists, and how to run it — based only on evidence found in the repository.
 A README documenting commands that don't work or features that don't exist is
 worse than a shorter, truthful one, so everything you write must trace back to
 something you actually saw in the repo.
+
+## Communicating with the user
+
+README work is often a collaboration with a maintainer who knows the project
+well. Ask before making structural changes that go beyond polish — replacing
+section names, removing existing content, or reorganizing the order. If the
+user gives a concrete README to improve, work within its existing structure
+unless they ask otherwise. Briefly explain non-obvious choices (e.g. why a
+section was omitted) so they can push back.
+
+---
 
 ## Exemplars
 
@@ -28,9 +44,27 @@ specific to those projects, and this skill excludes those sections anyway.
 
 One deliberate deviation from the exemplars: they place the badge row directly
 under the title, but this skill puts it after the one-line pitch (see
-Step 2) — follow this skill's header order, not the exemplars'.
+`### Choose the structure`) — follow this skill's header order, not the
+exemplars'.
 
-## Step 1: Discover the project
+---
+
+## Creating a README
+
+### Capture intent
+
+The intent for a README is usually simple: the user wants one written, or an
+existing one improved. Confirm the scope before drafting:
+
+1. Are you creating from scratch, or improving an existing `README.md`?
+2. What's the target audience — end users, contributors, internal developers?
+3. Any sections the user wants included or excluded (e.g. a specific
+   architecture diagram, sponsor list)?
+
+If the user gives an existing README, read it first — your job is to
+improve it, not replace it.
+
+### Discover the project
 
 Read the repository before writing anything. Good sources, in rough priority:
 
@@ -51,7 +85,7 @@ Read the repository before writing anything. Good sources, in rough priority:
 Check that each file exists before reading it, and work from what is actually
 there — not from what a typical project of this kind would contain.
 
-## Step 2: Choose the structure
+### Choose the structure
 
 Start from the skeleton below, then adapt it to the project type: a library
 leads with installation, an application leads with getting started and
@@ -74,7 +108,7 @@ Recommended flow:
 10. Resources — related documentation and links
 11. Troubleshooting — only if real guidance exists
 
-## Step 3: Write
+### Write
 
 - Use GitHub Flavored Markdown, with GitHub admonition syntax where it adds
   value: `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`.
@@ -86,7 +120,7 @@ Recommended flow:
 - Keep emojis rare, if used at all — a few in feature bullets is the most the
   exemplars use.
 
-### License badge
+#### License badge
 
 When the project's license is verifiable — a `LICENSE` file, or a `license`
 field in a manifest — generate a badge locally and lead the badge row with
@@ -116,7 +150,7 @@ Generating the badge locally keeps the README self-contained and
 offline-friendly — no external badge service, and the SVG is a real artifact
 of the repo. Reference it as `[![License](docs/license_badge.svg)](LICENSE)`.
 
-## Rules
+#### Rules
 
 **Link out, don't inline.** Never duplicate the content of `LICENSE`,
 `CONTRIBUTING`, `CHANGELOG`, or `CODE_OF_CONDUCT` files in the README. These
@@ -130,17 +164,17 @@ A one-line link is the right amount of README coverage for them.
 **Never fabricate.** This is the hard rule, because a confident README full
 of invented facts actively misleads users:
 
-- Only add badges for facts you verified: the license badge (see Step 3)
-  only when the license is verifiable, CI status only if workflow files
-  exist, language/runtime versions from manifests. If there is no CI, there
-  is no build badge.
+- Only add badges for facts you verified: the license badge (see the License
+  badge section) only when the license is verifiable, CI status only if
+  workflow files exist, language/runtime versions from manifests. If there is
+  no CI, there is no build badge.
 - Only include links that resolve within the repo; for external links, only
   ones found in repo files.
 - Only document commands the repo's configs or docs actually define.
 - When information is missing, omit the section rather than filling it with
   plausible-sounding content.
 
-## Self-check
+#### Self-check
 
 Before finishing, verify:
 
@@ -150,3 +184,15 @@ Before finishing, verify:
   the LICENSE file.
 - No LICENSE/CONTRIBUTING/CHANGELOG content is inlined.
 - The structure fits the project type, and no section is empty filler.
+
+## Updating an existing README
+
+When improving an existing `README.md` rather than creating one:
+
+- **Preserve the user's voice and structure.** Don't reorganize sections
+  unless asked. If the existing order is unusual, follow it.
+- **Fix what's wrong, leave what's working.** Typos, broken links, missing
+  badges — those are clear wins. Reordering or rewriting prose is a judgment
+  call; check with the user first.
+- **Keep the change small and reviewable.** A long diff makes it hard for the
+  user to approve. If the README needs major surgery, propose a plan first.
