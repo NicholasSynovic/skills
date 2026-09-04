@@ -5,9 +5,8 @@
 First-party OpenCode/Claude skills (AGPL-3.0). Every top-level directory
 containing a `SKILL.md` is a skill — auto-discovered by the Makefile and
 validated with `skills-ref`; adding one needs no Makefile edit. No application,
-test suite, or CI exists. `.agents/skills/readme-creator` is a symlink to
-`readme-creator/` (the project-local skill install) — editing the target edits
-the installed skill.
+test suite, or CI exists. `.agents/skills/` holds symlinks to all three skills — editing any of them
+edits the live installed skill (and vice versa).
 
 ## Build and verify
 
@@ -26,8 +25,8 @@ skills-ref`) — a project-venv install is not enough.
   with `REF ?= HEAD`, so **uncommitted working-tree changes are NOT packaged** —
   commit first, or override with `make build REF=<branch-or-sha>`.
 - One-shot setup: `make create-dev` (pre-commit install + autoupdate +
-  `uv sync`). The only verification is pre-commit — run
-  `pre-commit run --all-files` before committing.
+  `uv sync`). Primary verification is `make check`; pre-commit also runs on
+  commit, or invoke it directly with `pre-commit run --all-files`.
 
 ## Formatting (pre-commit enforces on commit)
 
