@@ -2,18 +2,23 @@
 
 ## What this repo is
 
-First-party OpenCode/Claude skills. Every top-level directory containing a
-`SKILL.md` is a skill (auto-discovered by the Makefile — no Makefile edit needed
-when adding one). No application, test suite, or CI exists; the root `README.md`
-is an empty placeholder.
+First-party OpenCode/Claude skills (AGPL-3.0). Every top-level directory
+containing a `SKILL.md` is a skill — auto-discovered by the Makefile and
+validated with `skills-ref`; adding one needs no Makefile edit. No application,
+test suite, or CI exists. `.agents/skills/readme-creator` is a symlink to
+`readme-creator/` (the project-local skill install) — editing the target edits
+the installed skill.
 
 ## Build and verify
 
+- Python tooling is uv-managed: `uv sync` (requires-python >=3.12, pinned to
+  3.14 in `.python-version`). The only dependency is `skills-ref`.
+- `make check` runs `skills-ref validate` on each skill. It calls the bare
+  `skills-ref` binary, which must be on PATH (e.g. `uv tool install
+skills-ref`) — a project-venv install is not enough.
 - `make build` zips each skill into `build/<skill>.skill`. It uses `git archive`
   with `REF ?= HEAD`, so **uncommitted working-tree changes are NOT packaged** —
   commit first, or override with `make build REF=<branch-or-sha>`.
-- `make check` currently fails: it invokes `scripts/check_skills.py`, which does
-  not exist yet.
 - The only verification is pre-commit (set up with `make create-dev`; pins
   Python 3.14). Run `pre-commit run --all-files` before committing.
 
