@@ -36,11 +36,11 @@ repos:
     - repo: https://github.com/astral-sh/ruff-pre-commit
       rev: v0.16.6
       hooks:
-          - id: ruff-check # Runs the linter
+          - id: ruff-check
             types_or: [python, pyi, jupyter, pyproject]
-            args: [--fix] # Automatically fixes linting errrors, see https://docs.astral.sh/ruff/rules/
+            args: [--fix]
           - id: ruff-format
-            types_or: [python, pyi, jupyter] # Runs the formatter
+            types_or: [python, pyi, jupyter]
 
     - repo: local
       hooks:
