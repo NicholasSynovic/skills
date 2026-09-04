@@ -1,3 +1,6 @@
+<!-- prettier-ignore -->
+<div align="center">
+
 # skills
 
 First-party agent skills for OpenCode and Claude Code — small, focused
@@ -17,11 +20,13 @@ matches. Any top-level directory here that holds a `SKILL.md` is discovered
 automatically — no registration needed — and validated with
 [skills-ref](https://pypi.org/project/skills-ref/).
 
-## Features
+## Available skills
 
-- Auto-discovered and validated via `skills-ref`
-- Packaged into `.skill` zips with `make build`
-- Formatted and checked by pre-commit hooks
+| Skill                                   | What it does                                                                         |
+| --------------------------------------- | ------------------------------------------------------------------------------------ |
+| [`readme-creator`](readme-creator/)     | Creates, rewrites, or improves a project's `README.md` by analyzing the repository   |
+| [`review-abilities`](review-abilities/) | Audits eight cross-cutting code qualities into a ranked `TODO.ability.md`            |
+| [`skill-creator`](skill-creator/)       | Creates, edits, and improves agent skills — frontmatter, body, and bundled resources |
 
 ## Getting started
 
@@ -49,14 +54,13 @@ This is a [uv](https://docs.astral.sh/uv/)-managed Python project that pins the
 validation tooling; there is no application code.
 
 ```bash
-uv sync          # install dependencies (Python >= 3.12, pinned to 3.14)
 make check       # validate every skill with skills-ref
 make build       # zip each skill into build/<skill>.skill
 make clean       # remove build/
 make create-dev  # set up pre-commit hooks and uv sync
 ```
 
-## Notes:
+## Notes
 
 - `make check` calls the `skills-ref` binary from your PATH — install it
   globally (e.g. `uv tool install skills-ref`), not just in the project venv.
