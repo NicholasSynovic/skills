@@ -21,9 +21,10 @@ build:
 		git archive --format=zip -o "build/$$skill.skill" $(REF) "$$skill" || exit 1; \
 	done
 
-# Repo-level validation: SKILL.md frontmatter and intra-skill relative links.
 check:
-	python3 scripts/check_skills.py
+	@for skill in $(SKILLS); do \
+		skills-ref validate $$skill; \
+	done
 
 clean:
 	rm -rf build
