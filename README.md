@@ -5,7 +5,7 @@ instruction packages that teach your agent how to do one thing well.
 
 [![License](docs/license_badge.svg)](LICENSE)
 
-[Overview](#overview) • [Getting started](#getting-started) • [Development](#development) • [License](#license)
+[Overview](#overview) • [Getting started](#getting-started) • [Development](#development)
 
 </div>
 
