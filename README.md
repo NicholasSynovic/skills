@@ -22,11 +22,13 @@ automatically — no registration needed — and validated with
 
 ## Available skills
 
-| Skill                                   | What it does                                                                         |
-| --------------------------------------- | ------------------------------------------------------------------------------------ |
-| [`readme-creator`](readme-creator/)     | Creates, rewrites, or improves a project's `README.md` by analyzing the repository   |
-| [`review-abilities`](review-abilities/) | Audits eight cross-cutting code qualities into a ranked `TODO.ability.md`            |
-| [`skill-creator`](skill-creator/)       | Creates, edits, and improves agent skills — frontmatter, body, and bundled resources |
+| Skill                                               | What it does                                                                              |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [`academic-writing-style`](academic-writing-style/) | Writes and edits academic prose in the author's voice under strict punctuation rules      |
+| [`paper-review`](paper-review/)                     | Reviews research papers with a three-pass workflow into a structured, reusable paper note |
+| [`readme-creator`](readme-creator/)                 | Creates, rewrites, or improves a project's `README.md` by analyzing the repository        |
+| [`review-abilities`](review-abilities/)             | Audits eight cross-cutting code qualities into a ranked `TODO.ability.md`                 |
+| [`skill-creator`](skill-creator/)                   | Creates, edits, and improves agent skills — frontmatter, body, and bundled resources      |
 
 ## Getting started
 
